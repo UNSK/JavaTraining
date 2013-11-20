@@ -1,0 +1,9 @@
+CODING RULES
+============
+
+基本的にはcheckstyleのSun　Checks(eclipse)準拠。
+変更点だけまとめる。
+
+・tab文字を認める
+・メンバ変数（フィールド）の命名規則は、^[a-z][a-zA-Z0-9]*_$
+・定数の命名規則は、^k[A-Z][a-zA-Z0-9]*(_[a-zA-Z0-9]+)*$
