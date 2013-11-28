@@ -28,15 +28,41 @@ public class MyRevisedLookup implements RevisedLookup {
 	}
 
 	@Override
-	public void add(String name) {
-		// TODO Auto-generated method stub
-
+	public boolean add(String name, Object value) {
+		if (this.find(name) != null) { //すでに名前が存在している
+			return false;
+		} else {
+			name_.add(name);
+			value_.add(value);
+			return true;
+		}
 	}
 
 	@Override
-	public void remove(String name) {
-		// TODO Auto-generated method stub
-
+	public boolean remove(String name) {
+		if (this.find(name) == null) { //名前が存在しない
+			return false;
+		} else {
+			value_.remove(name_.indexOf(name));
+			name_.remove(name);
+			return true;
+		}
+	}
+	
+	/**
+	 * 名前を追加するメソッド（初期設定用）
+	 * @param name 追加する名前
+	 */
+	public void addName(String name) {
+		name_.add(name);
+	}
+	
+	/**
+	 * 値を追加するメソッド（初期設定用）
+	 * @param value 追加したい値
+	 */
+	public void addValue(Object value) {
+		value_.add(value);
 	}
 
 }
