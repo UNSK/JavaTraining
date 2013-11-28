@@ -18,7 +18,12 @@ public class MyRevisedLookup implements RevisedLookup {
 	
 	@Override
 	public Object find(String name) {
-		// TODO
+		for (int i = 0; i < name_.size(); i++) {
+			if (name_.get(i).equals(name)) {
+				return value_.get(i);
+			}
+		}
+		// 見つからなかった
 		return null;
 	}
 
