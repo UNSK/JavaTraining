@@ -1,13 +1,11 @@
 package ex01_16;
 
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 /**
- *
+ * ファイルからdoubleのデータセットを取得するクラス
  */
 public class MyUtilities {
 	private static final int kMaxDataSet = 10;

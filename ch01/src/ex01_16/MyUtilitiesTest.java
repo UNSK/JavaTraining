@@ -4,19 +4,16 @@ import static org.junit.Assert.*;
 
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.reflect.Field;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
- *
+ * {@link MyUtilities}のテストコード
+ * 一時的にtest.dsetを作成する
  */
 public class MyUtilitiesTest {
 	private static final double DELTA = 1e-15;
