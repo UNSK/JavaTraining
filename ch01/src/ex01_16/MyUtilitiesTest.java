@@ -50,10 +50,26 @@ public class MyUtilitiesTest {
 	}
 
 	@Test
-	public void getDataSetTest() throws BadDataSetException {
+	public void testGetDataSet() throws BadDataSetException {
 		double[] data_set = util.getDataSet("test");
 		assertEquals(3.1415, data_set[0], DELTA);
 		assertEquals(1.4142, data_set[1], DELTA);
 	}
-
+	
+	/**
+	 * 例外をキャッチし、BadDataSetExceptionの仕様を満たしているか確認する
+	 * @throws BadDataSetException
+	 */
+	@Test
+	public void testBadDataSetException() throws BadDataSetException {
+		try {
+			double[] bad_data_set = util.getDataSet("bad");
+			fail("incoceivable");
+		} catch (BadDataSetException e) {
+			assertEquals("bad.dset", e.getFileName());
+			/* 例外の内容がfileNotFoundかどうかを確認する*/
+			assertTrue(e.getException().toString().startsWith(
+					"java.io.FileNotFoundException"));
+		}
+	}
 }

@@ -35,7 +35,7 @@ public class MyUtilities {
 		DataInputStream dis = null;
 		try {
 			dis = new DataInputStream(in);
-			for (int i = 0; dis.available() < 0; i++) {
+			for (int i = 0; dis.available() > 0; i++) {
 				data_set[i] = dis.readDouble();
 			}
 			return data_set;
