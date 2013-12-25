@@ -5,9 +5,9 @@ public class X {
 	protected int fullMask;
 	
 	public X() {
-		System.out.printf("Xコンストラクタ実行前:\t%4x\t%4x\t%4x%n", xMask, 0, fullMask);
+		System.out.printf("Xコンストラクタ実行前:\t%04x\t%04x\t%04x%n", xMask, 0, fullMask);
 		fullMask = xMask;
-		System.out.printf("Xコンストラクタ実行後:\t%4x\t%4x\t%4x%n", xMask, 0, fullMask);
+		System.out.printf("Xコンストラクタ実行後:\t%04x\t%04x\t%04x%n", xMask, 0, fullMask);
 	}
 	
 	public int mask(int orig) {
