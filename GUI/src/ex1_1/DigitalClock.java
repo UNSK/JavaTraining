@@ -29,7 +29,7 @@ public class DigitalClock extends Frame implements Runnable {
 		super("Digital Clock");
 		setSize(500, 100);
 		setVisible(true);
-
+		setResizable(false);
 		addWindowListener(new WindowAdapter() {
 			// ウィンドウを閉じる
 			@Override
