@@ -152,7 +152,27 @@ public class Vehicle {
 	public final long getVehicleID() {
 		return vehicleID;
 	}
-
+	
+	/**
+	 * @param energy the energy to set
+	 */
+	public void setEnergy(EnergySource energy) {
+		this.energy = energy;
+	}
+	
+	/**
+	 * @return the energy remain
+	 */
+	public double getEnergyRemain() {
+		return this.energy.getRemain();
+	}
+	
+	/**
+	 * @return is energy empty
+	 */
+	public boolean isEnergyEmpty() {
+		return this.energy.empty();
+	}
 	
 	public static void main(String[] args) {
 		Vehicle car = new Vehicle();
