@@ -1,4 +1,4 @@
-package ex03_11;
+package ex03_10;
 
 /**
  * 次の乗り物のIDと車単位のIDを持つVehicleクラス
