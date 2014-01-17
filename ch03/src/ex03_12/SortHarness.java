@@ -1,6 +1,5 @@
 package ex03_12;
 
-import ex03_11.SortMetrics;
 
 /**
  * どのようなオブジェクト型もソートできるクラス
@@ -11,7 +10,7 @@ public abstract class SortHarness {
 	/** メトリクス */
 	private final SortMetrics curMetrics = new SortMetrics();
 	/** セキュリティホール対策にsortメソッドが一度しか呼ばれないように制限するためのフラグ */
-	private static boolean isCalled = false;
+	private boolean isCalled = false;
 	
 	/**
 	 * 全ソートするために呼び出される
