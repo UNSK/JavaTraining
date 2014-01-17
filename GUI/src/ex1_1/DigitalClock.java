@@ -1,8 +1,12 @@
 package ex1_1;
 
+import java.awt.Button;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.DateFormat;
@@ -18,6 +22,8 @@ public class DigitalClock extends Frame implements Runnable {
 	private static final long serialVersionUID = 1L;
 	/** 時計の表示フォーマット */
 	private static final String CLOCK_PATTERN = "yyyy-MM-dd E HH:mm ss";
+	/** タイマーのセット時間（秒） */
+	private static int timerRemain = 0;
 	/** スレッド */
 	private Thread thread;
 
@@ -27,9 +33,19 @@ public class DigitalClock extends Frame implements Runnable {
 	 */
 	public DigitalClock() {
 		super("Digital Clock");
-		setSize(500, 100);
+		setSize(500, 120);
 		setVisible(true);
 		setResizable(false);
+		setLayout(new FlowLayout(200));
+		Button TimerButton = new Button("timer");
+		add(TimerButton);
+		TimerButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				timerRemain = 5;
+			}
+		});
 		addWindowListener(new WindowAdapter() {
 			// ウィンドウを閉じる
 			@Override
@@ -50,6 +66,9 @@ public class DigitalClock extends Frame implements Runnable {
 	public void paint(Graphics g) {
 		g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 20));
 		g.drawString(fetchCurrentTime(), 100, 65);
+		if (timerRemain >= 0) {
+			g.drawString(((Integer)timerRemain--).toString(), 200, 100);
+		}
 	}
 
 	
