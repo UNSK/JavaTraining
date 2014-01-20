@@ -5,6 +5,8 @@ import java.util.LinkedList;
 
 /**
  * 5.2 口座に対する最後の10個の処理を記録する
+ * 回答：　HistoryはbankAccout内でしか使用しないため内部クラスにする。
+ * 		インスタンスごとに所有している必要が有るため、非staticである。
  */
 public class BankAccount {
 	/** 口座番号 */
