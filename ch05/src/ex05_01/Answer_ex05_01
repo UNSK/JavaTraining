@@ -1,0 +1,4 @@
+練習問題5.1回答
+
+エンクロージング：Attributed、ネスト：Attrs
+理由：Attributedは複数のAttrsに対する操作を記述しているため
