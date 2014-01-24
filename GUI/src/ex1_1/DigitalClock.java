@@ -5,8 +5,11 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.TextEvent;
+import java.awt.event.TextListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.DateFormat;
@@ -24,12 +27,14 @@ public class DigitalClock extends Frame implements Runnable {
 	private static final String CLOCK_PATTERN = "yyyy-MM-dd E HH:mm ss";
 	/** タイマーのセット時間（秒） */
 	private static int timerRemain = 0;
-	/** スレッド */
+	/** is timer running */
+	private static boolean isTimerRun = false;
+	/** Thread */
 	private Thread thread;
 
 	/**
-	 * コンストラクタ
-	 * タイトル表示、サイズ設定、WindowListnerを設定し、スレッドをスタートする
+	 * set title, window size. add EventListener
+	 * start thread
 	 */
 	public DigitalClock() {
 		super("Digital Clock");
@@ -37,17 +42,45 @@ public class DigitalClock extends Frame implements Runnable {
 		setVisible(true);
 		setResizable(false);
 		setLayout(new FlowLayout(200));
-		Button TimerButton = new Button("timer");
-		add(TimerButton);
-		TimerButton.addActionListener(new ActionListener() {
+		
+		/* add set time field */
+		TextField timerText = new TextField(8);
+		add(timerText);
+		timerText.addTextListener(new TextListener() {
 			
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				timerRemain = 5;
+			public void textValueChanged(TextEvent textEvent) {
+				TextField t = (TextField) textEvent.getSource();
+				try {
+					if (!isTimerRun) {
+						timerRemain = Integer.parseInt(t.getText());
+						repaint();
+					} else {
+						t.setText("");	
+					}
+				} catch (NumberFormatException e) {
+					t.setText(""); // field clear
+				}
 			}
 		});
+		
+		/* add timer start button */
+		Button timerButton = new Button("Timer");
+		add(timerButton);
+		timerButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (isTimerRun) { // toggle switch
+					isTimerRun = false;
+				} else {
+					isTimerRun = true;
+				}
+			}
+		});
+		
+		
 		addWindowListener(new WindowAdapter() {
-			// ウィンドウを閉じる
+			// close window
 			@Override
 			public void windowClosing(WindowEvent e) {
 				System.exit(0);
@@ -65,15 +98,22 @@ public class DigitalClock extends Frame implements Runnable {
 	@Override
 	public void paint(Graphics g) {
 		g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 20));
-		g.drawString(fetchCurrentTime(), 100, 65);
-		if (timerRemain >= 0) {
-			g.drawString(((Integer)timerRemain--).toString(), 200, 100);
+		g.drawString(fetchCurrentTime(), 150, 65);
+		if (timerRemain == 0) {
+			isTimerRun = false;
+		}
+		if (isTimerRun) {
+			g.drawString("Timer " 
+					+ ((Integer) timerRemain--) + " sec", 200, 100);
+		} else {
+			g.drawString("      " 
+					+ ((Integer) timerRemain) + " sec", 200, 100);
 		}
 	}
 
 	
 	/**
-	 * 文字列に変換した現在の時刻を取得する
+	 * fetch current time to string
 	 * @return フォーマットで指定された形式の現時刻を表す文字列
 	 */
 	public String fetchCurrentTime() {
@@ -82,7 +122,7 @@ public class DigitalClock extends Frame implements Runnable {
 		return df.format(calendar.getTime());
 	}
 
-	/** スレッドをスタートする */
+	/** start thread */
 	public void startThread() {
 		thread = new Thread(this);
 		thread.start();
