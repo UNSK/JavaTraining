@@ -1,6 +1,7 @@
 package ex1_2;
 
 import java.awt.Button;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
@@ -36,7 +37,11 @@ public class DigitalClock extends Frame implements Runnable {
 	
 	/** Font Settings*/
 	private Font clockFont; 
-
+	/** Clock string color */
+	private Color clockColor;
+	/** frame background color */
+	private Color bgColor;
+	
 	/**
 	 * set title, window size. add EventListener
 	 * start thread
@@ -93,6 +98,8 @@ public class DigitalClock extends Frame implements Runnable {
 		});
 		
 		clockFont = new Font(Font.MONOSPACED, Font.PLAIN, 20);
+		clockColor = Color.BLACK;
+		bgColor = Color.WHITE;
 		this.startThread();
 	}
 
@@ -103,7 +110,9 @@ public class DigitalClock extends Frame implements Runnable {
 
 	@Override
 	public void paint(Graphics g) {
+		setBackground(bgColor);
 		g.setFont(clockFont);
+		g.setColor(clockColor);
 		g.drawString(fetchCurrentTime(), 150, 65);
 		if (timerRemain == 0) {
 			isTimerRun = false;
@@ -146,7 +155,33 @@ public class DigitalClock extends Frame implements Runnable {
 		}
 	}
 	
+	/** @param font the clockFont to set */
 	public void setClockFont(Font font) {
 		clockFont = font;
+	}
+	
+	/** @return the ClockFont */
+	public Font getClockFont() {
+		return clockFont;
+	}
+	
+	/** @param color the clockColor to set */
+	public void setClockColor(Color color) {
+		clockColor = color;
+	}
+	
+	/** @return the clockColor */
+	public Color getClockColor() {
+		return clockColor;
+	}
+	
+	/** @param color the bgColor to set */
+	public void setBgColor(Color color) {
+		bgColor = color;
+	}
+	
+	/** @return the bgColor */
+	public Color getBgColor() {
+		return bgColor;
 	}
 }
