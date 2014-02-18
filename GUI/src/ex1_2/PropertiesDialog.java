@@ -8,6 +8,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GraphicsEnvironment;
+import java.awt.GridLayout;
+import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -41,15 +43,17 @@ public class PropertiesDialog extends Dialog {
 		//set modal true
 		super((Frame) parent, true);
 		setTitle("Properties");
-		setSize(300,200);
-		setResizable(true);
-		setLayout(new FlowLayout());
+		//setSize(300,200);
+		setResizable(false);
+		setLayout(new GridLayout(6, 2));
 		
 		Font currentFont = parent.getClockFont();
 		Color currentClockColor = parent.getClockColor();
 		Color currentBGColor = parent.getBgColor();
 		
 		/* font name choice */
+		Label fontNameLabel = new Label("Font name: ");
+		add(fontNameLabel);
 		final Choice fontChoice = new Choice();
 		GraphicsEnvironment ge =
 				GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -61,6 +65,8 @@ public class PropertiesDialog extends Dialog {
 		add(fontChoice);
 		
 		/* font size choice */
+		Label fontSizeLabel = new Label("Font size: ");
+		add(fontSizeLabel);
 		final Choice fsizeChoice = new Choice();
 		for (int i = MIN_SIZE; i < MAX_SIZE; i += 2) {
 			fsizeChoice.add(Integer.toString(i));
@@ -69,6 +75,8 @@ public class PropertiesDialog extends Dialog {
 		add(fsizeChoice);
 		
 		/* font color */
+		Label fontColorLabel = new Label("Font Color: ");
+		add(fontColorLabel);
 		final Choice fcolorChoice = new Choice();
 		for (Color colors : COLORS) {
 			fcolorChoice.add(getColorName(colors));
@@ -77,6 +85,8 @@ public class PropertiesDialog extends Dialog {
 		add(fcolorChoice);
 		
 		/* frame back ground color */
+		Label bgColorLabel = new Label("Background Color: ");
+		add(bgColorLabel);
 		final Choice bgColorChoice = new Choice();
 		for (Color colors : COLORS) {
 			bgColorChoice.add(getColorName(colors));
@@ -100,9 +110,9 @@ public class PropertiesDialog extends Dialog {
 			}
 		});
 		
-		Button canselButton = new Button("Cancel");
-		this.add(canselButton);
-		canselButton.addActionListener(new ActionListener() {
+		Button cancelButton = new Button("Cancel");
+		this.add(cancelButton);
+		cancelButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				setVisible(false);
@@ -115,6 +125,8 @@ public class PropertiesDialog extends Dialog {
 				setVisible(false);
 			}
 		});
+		
+		pack();
  	}
 	
 	private String getColorName(Color color) {

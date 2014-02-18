@@ -4,8 +4,10 @@ import java.awt.Button;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,15 +15,17 @@ import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import java.awt.image.BufferStrategy;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
 /**
- * 　課題1-1 AWTのFrameを使用して、時間を表示するデジタル時計
+ * 　課題1-2 メニューの追加、プロパティダイアログの追加
+ * 		プロパティダイアログ内にフォント指定の追加
+ * 		ダブルバッファリングの実装
+ * 		フォントサイズに応じてフレームの大きさを変更
  */
 public class DigitalClock extends Frame implements Runnable {
 	/** serial version */
@@ -42,6 +46,9 @@ public class DigitalClock extends Frame implements Runnable {
 	/** frame background color */
 	private Color bgColor;
 	
+	/** buffer strategy */
+	private BufferStrategy buf;
+	
 	/**
 	 * set title, window size. add EventListener
 	 * start thread
@@ -49,10 +56,10 @@ public class DigitalClock extends Frame implements Runnable {
 	public DigitalClock() {
 		super("Digital Clock");
 		setSize(500, 120);
-		setVisible(true);
 		setResizable(false);
 		setLayout(new FlowLayout(200));
 		setMenuBar(new DCMenu(this).getMenuBar());
+		
 		
 		/* add set time field */
 		TextField timerText = new TextField(8);
@@ -100,6 +107,10 @@ public class DigitalClock extends Frame implements Runnable {
 		clockFont = new Font(Font.MONOSPACED, Font.PLAIN, 20);
 		clockColor = Color.BLACK;
 		bgColor = Color.WHITE;
+		
+		setVisible(true);
+		createBufferStrategy(2);
+		buf = getBufferStrategy();
 		this.startThread();
 	}
 
@@ -110,22 +121,32 @@ public class DigitalClock extends Frame implements Runnable {
 
 	@Override
 	public void paint(Graphics g) {
+		Graphics bufGraphics = buf.getDrawGraphics();
+		if (!buf.contentsLost()) {
 		setBackground(bgColor);
-		g.setFont(clockFont);
-		g.setColor(clockColor);
-		g.drawString(fetchCurrentTime(), 150, 65);
-		if (timerRemain == 0) {
-			isTimerRun = false;
-		}
+		bufGraphics.clearRect(0, 0, getSize().width, getSize().height);
+		bufGraphics.setFont(clockFont);
+		bufGraphics.setColor(clockColor);
+		
+		FontMetrics fm = bufGraphics.getFontMetrics();
+		Rectangle textRec = fm.getStringBounds(
+				fetchCurrentTime(), bufGraphics).getBounds();
+		int newWidth = 200 + textRec.width;
+		int newHeight = 120 + textRec.height;
+		setSize(newWidth, newHeight);
+		bufGraphics.drawString(fetchCurrentTime(), 100,
+				120 - textRec.height/2 + fm.getMaxAscent());
 		if (isTimerRun) {
-			g.drawString("Timer " 
-					+ ((Integer) timerRemain--) + " sec", 200, 100);
+			bufGraphics.drawString("Timer " 
+					+ ((Integer) timerRemain) + " sec", 200, 90);
 		} else {
-			g.drawString("      " 
-					+ ((Integer) timerRemain) + " sec", 200, 100);
+			bufGraphics.drawString("      " 
+					+ ((Integer) timerRemain) + " sec", 200, 90);
+		}
+		buf.show();
+		bufGraphics.dispose();
 		}
 	}
-
 	
 	/**
 	 * fetch current time to string
@@ -147,6 +168,11 @@ public class DigitalClock extends Frame implements Runnable {
 	public void run() {
 		while (thread == Thread.currentThread()) {
 			repaint();
+			if (isTimerRun) {
+				if (--timerRemain == 0) {
+					isTimerRun = false;
+				}
+			}
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
