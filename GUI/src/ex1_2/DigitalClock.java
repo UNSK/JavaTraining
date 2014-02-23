@@ -169,8 +169,10 @@ public class DigitalClock extends Frame implements Runnable {
 		while (thread == Thread.currentThread()) {
 			repaint();
 			if (isTimerRun) {
-				if (--timerRemain == 0) {
+				if (timerRemain == 0) {
 					isTimerRun = false;
+				} else {
+					timerRemain--;
 				}
 			}
 			try {
