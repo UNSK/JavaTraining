@@ -111,7 +111,7 @@ public class DigitalClock extends Window implements Runnable {
 		});
 		
 		
-		final PopupMenu popupMenu = new DCMenu();
+		final PopupMenu popupMenu = new DCMenu(this);
 		add(popupMenu);
 		addMouseListener(new MouseAdapter() {
 			@Override
