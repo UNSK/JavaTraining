@@ -1,5 +1,6 @@
-package ex03_10;
+package ex11_01;
 
+import java.util.ListResourceBundle;
 
 /**
  * Vehicle型のフィールドと、次のLinkedListへの参照を持つクラス
@@ -8,19 +9,19 @@ package ex03_10;
  * add 2.16 LinkedListの要素数を返すgetListLengthメソッドを追加
  * add 3.10 Cloneableの実装
  */
-public class LinkedList implements Cloneable {
-	private Object data_obj;
-	private LinkedList next; 
+public class LinkedList<E> implements Cloneable {
+	private E data_obj;
+	private LinkedList<E> next; 
 	
-	public LinkedList(Object data, LinkedList nextlist) {
+	public LinkedList(E data, LinkedList<E> nextlist) {
 		data_obj = data;
 		next = nextlist;
 	}
 	
 	@Override
-	public LinkedList clone() {
+	public LinkedList<E> clone() {
 		try {
-			LinkedList clonedList = (LinkedList) super.clone();
+			LinkedList<E> clonedList = (LinkedList<E>) super.clone();
 			if (this.next != null) {
 				clonedList.next = this.next.clone();
 			}
@@ -38,19 +39,6 @@ public class LinkedList implements Cloneable {
 			str_tmp += "\n" + next;
 		}
 		return str_tmp;
-	}
-	
-	/**
-	 * LinkedListを連結する
-	 * @param lists　LinkedListのシーケンス、与えた順番に連結される
-	 */
-	public static void makeLinkedList(LinkedList...lists) {
-		for (int i = 0; i < lists.length - 1; i++) {
-			if (lists[i + 1] != null) {
-				lists[i].next = lists[i + 1];
-			}
-		}
-		lists[lists.length - 1].next = null; // listの最後を設定
 	}
 	
 	/**
@@ -75,14 +63,14 @@ public class LinkedList implements Cloneable {
 	/**
 	 * @param data_obj the data_obj to set
 	 */
-	public void setData_obj(Object data_obj) {
+	public void setData_obj(E data_obj) {
 		this.data_obj = data_obj;
 	}
 
 	/**
 	 * @return the next
 	 */
-	public LinkedList getNext() {
+	public LinkedList<E> getNext() {
 		return next;
 	}
 
@@ -106,35 +94,11 @@ public class LinkedList implements Cloneable {
 		bike.setOwner("John K Starley");
 
 		/* LinkedListを作成 */
-		LinkedList list1 = new LinkedList(car, null);
-		LinkedList list2 = new LinkedList(train, null);
-		LinkedList list3 = new LinkedList(bike, null);
+		LinkedList<Vehicle> list3 = new LinkedList<>(bike, null);
+		LinkedList<Vehicle> list2 = new LinkedList<>(train, list3);
+		LinkedList<Vehicle> list1 = new LinkedList<>(car, list2);
 		
-		/* listを連結 */
-		makeLinkedList(list1, list2, list3);
-		
-		/* 表示 */
-		System.out.println("-- Original --");
 		System.out.println(list1);
-		
-		LinkedList clonedList = list1.clone();
-		
-		System.out.println("-- Clone --");
-		System.out.println(clonedList);
-		
-		/* オリジナルの順番を入れ替える */
-		System.out.println("** changes to original list **");
-		makeLinkedList(list3, list2, list1);
-		/* list3のデータを変更する */
-		bike.setDirection(0.0);
-		bike.setOwner("CHANGE!");
-		
-		/* 表示 */
-		System.out.println("-- Original --");
-		System.out.println(list3);
-		
-		System.out.println("-- Clone --");
-		System.out.println(clonedList);
 	}
 	
 }
