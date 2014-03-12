@@ -148,8 +148,6 @@ public class DigitalClock extends Window implements Runnable {
         bgColor = Color.WHITE;
 
         setVisible(true);
-        createBufferStrategy(2);
-        buf = getBufferStrategy();
         this.startThread();
     }
 
@@ -160,7 +158,12 @@ public class DigitalClock extends Window implements Runnable {
 
     @Override
     public void paint(Graphics g) {
-        // FIXME this throws nullpo
+        buf = getBufferStrategy();
+        if (buf == null) {
+            createBufferStrategy(2);
+            requestFocus();
+            return;
+        }
         Graphics bufGraphics = buf.getDrawGraphics();
         if (!buf.contentsLost()) {
             setBackground(bgColor);
