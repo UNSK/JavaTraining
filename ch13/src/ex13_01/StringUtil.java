@@ -4,7 +4,7 @@ public class StringUtil {
     
     /**
      * count character in a String
-     * @param str to be searched
+     * @param str to be checked
      * @param ch count character
      * @return count
      */

@@ -6,7 +6,7 @@ import static org.hamcrest.CoreMatchers.*;
 import org.junit.Test;
 
 /**
- *
+ * Test code for StringUtil
  */
 public class StringUtilTest {
 

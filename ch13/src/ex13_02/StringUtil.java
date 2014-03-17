@@ -4,7 +4,7 @@ public class StringUtil {
     
     /**
      * count character in a String
-     * @param str to be searched
+     * @param str to be checked
      * @param ch count character
      * @return count
      */
@@ -18,6 +18,12 @@ public class StringUtil {
        return count;
     }
     
+    /**
+     * count region in a String
+     * @param str to be checked
+     * @param other count string region
+     * @return count
+     */
     public static int countMachedRegion(String str, String other) {
         int count = 0;
         if (str.length() < other.length()) {
