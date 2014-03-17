@@ -1,0 +1,21 @@
+・PssengerVehicleオブジェクトの店員を負の値に設定しようとした
+	定義外の引数が渡されたとして例外をjava.lang.IllegalArgumentExceptionをthrowする
+
+・オブジェクトがその初期値を設定するのに使用する設定ファイルに、文法エラーが見つかった。
+	設定ファイルの形式に合わせて独自の例外を作成し、throwする
+	
+・プログラマが指定した単語を文字列の配列から検索するメソッドが、その単語を発見できない。
+	練習問題１２．１の様に例外を定義するか、nullを返すようにして,nullPointerExceptionをthrowする。
+
+・openメソッドへ指定されたファイルが存在しない
+	指定されたファイルが見つからなかった貯め、java.io.FileNotFoundExceptionをthrowする
+		
+・openメソッドへ指定されたファイルは存在するが、セキュリティにより使用できない
+	アクセスできないため、java.security.AccessControlExceptionをthrowする
+	
+・リモートのサーバプロセスにネットワークコネクションを確立しようとするが、リモートのマシンを接続できない
+	リモートに接続できないので、java.net.ConnectExceptionをthrowする
+	
+・リモートのサーバプロセスとのやりとりの最中に、ネットワークコネクションが切れる
+	接続が中断されたとして、java.net.SocketExceptionをthrowする
+	
