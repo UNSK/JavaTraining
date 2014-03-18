@@ -108,6 +108,20 @@ public class StringUtil {
     }
     
     public static String delimitNumeral(String numeral) {
-        
+        StringBuilder nBuilder = new StringBuilder(numeral);
+        char delimiter = ',';
+        int numOfDigit = numeral.length();
+        if (numOfDigit > 3) {
+            int offset = numOfDigit % 3;
+            if (offset == 0) {
+                offset = 3;
+            }
+            while (offset < numOfDigit) {
+                nBuilder.insert(offset, delimiter);
+                offset += 4;
+            }
+        }
+        return nBuilder.toString();
     }
+   
 }
