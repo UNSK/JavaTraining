@@ -119,6 +119,7 @@ public class StringUtil {
             while (offset < numOfDigit) {
                 nBuilder.insert(offset, delimiter);
                 offset += 4;
+                numOfDigit++;
             }
         }
         return nBuilder.toString();
