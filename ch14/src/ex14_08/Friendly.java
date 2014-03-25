@@ -39,17 +39,15 @@ public class Friendly {
     }
     
     /** @return true (false), if you could (not) lock. */ 
-    private boolean lock() {
-        synchronized (Friendly.class) {
-            if (!isLocked) {
-                isLocked = true;
-                return true;
-            }
-            return false;
+    private static synchronized boolean lock() {
+        if (!isLocked) {
+            isLocked = true;
+            return true;
         }
+        return false;
     }
     
-    private void unlock() {
+    private static synchronized void unlock() {
         isLocked = false;
     }
     
