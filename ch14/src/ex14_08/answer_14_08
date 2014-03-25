@@ -1,0 +1,5 @@
+Windows 7 32-bit
+core i5-3320M
+yield無し：20回中9回デッドロック
+yieldあり：20回中4回デッドロック
+
