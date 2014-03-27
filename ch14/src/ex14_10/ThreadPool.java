@@ -129,20 +129,22 @@ public class ThreadPool {
     }
     
     private class Worker extends Thread {
-        
-        Runnable r;
+        private Runnable r;
         @Override
         public void run() {
-            for (;;) {
+            while (!isInterrupted()) {
                 synchronized (queue) {
                     while (queue.isEmpty()) {
                         try {
                             queue.wait();
+                            
                         } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
                         }
+                        r = queue.poll();
+                        r.run();
                     }
-                    r = queue.poll();
-                    r.run();
+                    
                 }
             }
         }
