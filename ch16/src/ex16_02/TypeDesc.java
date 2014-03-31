@@ -1,0 +1,87 @@
+package ex16_02;
+
+import java.io.PrintStream;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+
+/**
+ * 16.1 Modify TypeDesc to skip printing for the java.lang.Object class
+ * 16.2 Modify to print whether the type is a nested type. And print what is nested type.
+ */
+public class TypeDesc {
+
+    public static void main(String[] args) {
+        TypeDesc desc = new TypeDesc();
+        for (String name : args) {
+            try {
+                Class<?> startClass = Class.forName(name);
+                desc.printType(startClass, 0, basic);
+            } catch (ClassNotFoundException e) {
+                System.err.println(e);
+            }
+        }
+    }
+
+    private PrintStream out = System.out;
+    
+    private static String[]
+            basic   = {"class", "interface", "enum", "annotation"},
+            supercl = {"extends", "implements"},
+            iFace   = {null, "extends"};
+    
+    private void printType(Type type, int depth, String[] labels) {
+        if ((type == null) || type.equals(Object.class)) {
+            return;
+        }
+        
+        Class<?> cls = null;
+        if (type instanceof Class<?>) {
+            cls = (Class<?>) type;
+        } else if (type instanceof ParameterizedType) {
+            cls = (Class<?>) ((ParameterizedType) type).getRawType();
+        } else {
+            throw new Error("Unexpected non-class type.");
+        }
+        
+        //print this type
+        for (int i = 0; i < depth; i++) {
+            out.print("  ");
+        }
+        int kind = cls.isAnnotation() ? 3 : 
+            cls.isEnum() ? 2 :
+            cls.isInterface() ? 1 : 0;
+        out.print(labels[kind] + " ");
+        out.print(cls.getCanonicalName());
+        
+        //print generic type parameters if existence
+        TypeVariable<?>[] params = cls.getTypeParameters();
+        if (params.length > 0) {
+            out.print("<");
+            for (TypeVariable<?> param : params) {
+                out.print(param.getName());
+                out.print(", ");
+            }
+            out.print("\b\b>");
+        } 
+        
+        Type enclosingCls = cls.getEnclosingClass();
+        if (enclosingCls != null) {
+            out.println(" is nested in");
+            printType(enclosingCls, depth + 1, basic);
+        } else {
+            out.println();
+        }
+        
+        
+        //print all interfaces this class implements
+        Type[] interfaces = cls.getGenericInterfaces();
+        for (Type iface : interfaces) {
+            printType(iface, depth + 1, 
+                    cls.isInterface() ? iFace : supercl);
+        }
+        
+        //recurse the super class
+        printType(cls.getGenericSuperclass(), depth + 1, supercl);
+    }
+}
