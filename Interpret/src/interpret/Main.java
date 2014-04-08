@@ -14,7 +14,7 @@ public class Main {
             @Override
             public void run() {
                 InterpretController controller = new InterpretController();
-                controller.start();
+                controller.control();
             }
         });
     }
