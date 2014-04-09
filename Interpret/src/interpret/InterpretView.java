@@ -6,11 +6,14 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import javax.swing.BoxLayout;
+import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
@@ -27,6 +30,7 @@ public class InterpretView extends JFrame {
     public JTextField cNameField;
     public JComboBox<String> cNameCombo;
     public JButton createButton;
+    public JTextField argsTextField;
     public JList<Constructor<?>> constructorJList;
     public JList<Field> fieldJList;
     public JList<Object> objectJList;
@@ -41,7 +45,6 @@ public class InterpretView extends JFrame {
      * construct Interpret
      */
     public InterpretView() {
-        
         getContentPane().setLayout(new FlowLayout());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Interpret");
@@ -55,18 +58,29 @@ public class InterpretView extends JFrame {
         cNameField = (JTextField) cNameCombo.getEditor().getEditorComponent();
         cNameField.setText("");
         cNameField.addKeyListener(new ClassNameComboHandler(cNameCombo));
-        add(cNameCombo);
-        
-        //create button
-        createButton = new JButton("Create");
-        add(createButton);
+        //add(cNameCombo);
         
         //constructor list
         constructorJList = new JList<>(ObjectManager.getConstructorListModel());
         JScrollPane constructorScroll = new JScrollPane();
         constructorScroll.getViewport().setView(constructorJList);
         constructorScroll.setPreferredSize(null);
-        add(constructorScroll);
+        //add(constructorScroll);
+        
+        //arguments text field
+        argsTextField = new JTextField(10);
+        
+        //create button
+        createButton = new JButton("Create");
+        //add(createButton);
+        
+        JPanel creationPanel = new JPanel();
+        creationPanel.setLayout(new BoxLayout(creationPanel, BoxLayout.Y_AXIS));
+        creationPanel.add(cNameCombo);
+        creationPanel.add(constructorScroll);
+        creationPanel.add(argsTextField);
+        creationPanel.add(createButton);
+        this.add(creationPanel);
         
         //object list
         objectJList = new JList<>(ObjectManager.getObjectListModel());
@@ -83,9 +97,9 @@ public class InterpretView extends JFrame {
         add(fieldScroll);
         
         //field details
-        fieldLabel = new JLabel();
+        fieldLabel = new JLabel("Value\n");
         add(fieldLabel);
-        valueField = new JTextField(10);
+        valueField = new JTextField("value", 10);
         add(valueField);
         
         //method list
@@ -95,6 +109,8 @@ public class InterpretView extends JFrame {
         methodScroll.setPreferredSize(null);
         add(methodScroll);
         
+        pack();
+        setSize(getPreferredSize());
         setVisible(true);
         try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsClassicLookAndFeel");

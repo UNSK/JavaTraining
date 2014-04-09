@@ -12,8 +12,10 @@ import javax.swing.event.ListSelectionListener;
  *
  */
 public class InterpretController {
-    InterpretView view;
-    ObjectManager objectManager;
+    private final InterpretView view;
+    private final ObjectManager objectManager;
+    
+
    
     public InterpretController() {
         view = new InterpretView();

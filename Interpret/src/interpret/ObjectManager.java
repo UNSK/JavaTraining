@@ -3,6 +3,7 @@ package interpret;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -22,14 +23,16 @@ public class ObjectManager {
     public static DefaultListModel<Field> fieldListModel = new DefaultListModel<>(); 
     public static DefaultListModel<Method> methodListModel = new DefaultListModel<>();
     
- 
+    private Object[] args;
 
     public void createObject(Class<?> cls, Constructor<?> constructor) {
             Object obj = null;
             System.out.println(constructor);
+            args = null;
             try {
-                obj = cls.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
+                obj = constructor.newInstance(args);
+            } catch (InstantiationException | IllegalAccessException
+                    | IllegalArgumentException | InvocationTargetException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
