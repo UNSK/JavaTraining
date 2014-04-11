@@ -22,13 +22,10 @@ public class ObjectManager {
     public static DefaultListModel<Object> objectListModel = new DefaultListModel<>();
     public static DefaultListModel<Field> fieldListModel = new DefaultListModel<>(); 
     public static DefaultListModel<Method> methodListModel = new DefaultListModel<>();
-    
-    private Object[] args;
 
-    public void createObject(Class<?> cls, Constructor<?> constructor) {
+    public void createObject(Constructor<?> constructor, Object...args) {
             Object obj = null;
             System.out.println(constructor);
-            args = null;
             try {
                 obj = constructor.newInstance(args);
             } catch (InstantiationException | IllegalAccessException

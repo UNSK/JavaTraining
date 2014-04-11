@@ -170,6 +170,13 @@ public class InterpretView extends JFrame {
         return valueField;
     }
 
+    /**
+     * @return the argsTextField
+     */
+    public JTextField getArgsTextField() {
+        return argsTextField;
+    }
+
     
     
 }
