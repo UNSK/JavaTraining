@@ -1,13 +1,12 @@
 package interpret;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import javax.swing.BoxLayout;
-import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -30,14 +29,21 @@ public class InterpretView extends JFrame {
     public JTextField cNameField;
     public JComboBox<String> cNameCombo;
     public JButton createButton;
-    public JTextField argsTextField;
+    public JTextField arraySizeField;
+    public JButton createArrayButton;
+    public JTextField constArgsTextField;
     public JList<Constructor<?>> constructorJList;
     public JList<Field> fieldJList;
     public JList<Object> objectJList;
     public JList<Method> methodJList;
     public JLabel fieldLabel;
     public JTextField valueField;
+    public JButton fieldSetButton;
+    public JTextField methodArgsTextField;
+    public JButton methodInvokeButton;
     
+
+
     private String[] cNameList = {
             "java.lang.String", "java.lang.Double", "interpret.TestSub"};
 
@@ -68,46 +74,77 @@ public class InterpretView extends JFrame {
         //add(constructorScroll);
         
         //arguments text field
-        argsTextField = new JTextField(10);
-        
+        constArgsTextField = new JTextField("Arguments");
         //create button
         createButton = new JButton("Create");
-        //add(createButton);
+        //array size text field
+        arraySizeField = new JTextField("size");
+        //add create array button
+        createArrayButton = new JButton("Create Array");
         
-        JPanel creationPanel = new JPanel();
-        creationPanel.setLayout(new BoxLayout(creationPanel, BoxLayout.Y_AXIS));
-        creationPanel.add(cNameCombo);
-        creationPanel.add(constructorScroll);
-        creationPanel.add(argsTextField);
-        creationPanel.add(createButton);
-        this.add(creationPanel);
+        //TODO change to group layout
+        JPanel creationSubPanel = new JPanel();
+        creationSubPanel.setLayout(new GridLayout(2, 2));
+        creationSubPanel.add(constArgsTextField);
+        creationSubPanel.add(createButton);
+        creationSubPanel.add(arraySizeField);
+        creationSubPanel.add(createArrayButton);
         
         //object list
         objectJList = new JList<>(ObjectManager.getObjectListModel());
         JScrollPane objectScroll = new JScrollPane();
         objectScroll.getViewport().setView(objectJList);
         objectScroll.setPreferredSize(null);
-        add(objectScroll);
+        //add(objectScroll);
+        
+        JPanel creationPanel = new JPanel();
+        creationPanel.setLayout(new BoxLayout(creationPanel, BoxLayout.Y_AXIS));
+        creationPanel.add(cNameCombo);
+        creationPanel.add(constructorScroll);
+        creationPanel.add(creationSubPanel);
+        creationPanel.add(objectScroll);
+        this.add(creationPanel);
+        
         
         //field list
         fieldJList = new JList<>(ObjectManager.getFieldListModel());
         JScrollPane fieldScroll = new JScrollPane();
         fieldScroll.getViewport().setView(fieldJList);
         fieldScroll.setPreferredSize(null);
-        add(fieldScroll);
         
         //field details
-        fieldLabel = new JLabel("Value\n");
-        add(fieldLabel);
         valueField = new JTextField("value", 10);
-        add(valueField);
+        //field set button
+        fieldSetButton = new JButton("Set");
+
+        JPanel fieldSubPanel = new JPanel();
+        fieldSubPanel.setLayout(new FlowLayout());
+        fieldSubPanel.add(valueField);
+        fieldSubPanel.add(fieldSetButton);
+        
+        JPanel fieldPanel = new JPanel();
+        fieldPanel.setLayout(new BoxLayout(fieldPanel, BoxLayout.Y_AXIS));
+        fieldPanel.add(fieldScroll);
+        fieldPanel.add(fieldSubPanel);
+        add(fieldPanel);
         
         //method list
         methodJList = new JList<>(ObjectManager.getMethodListModel());
         JScrollPane methodScroll = new JScrollPane();
         methodScroll.getViewport().setView(methodJList);
         methodScroll.setPreferredSize(null);
-        add(methodScroll);
+        
+        //method arguments text field
+        methodArgsTextField = new JTextField(10);   
+        //method invoke button
+        methodInvokeButton = new JButton("Invoke");
+        
+        JPanel methodPanel = new JPanel();
+        methodPanel.setLayout(new BoxLayout(methodPanel, BoxLayout.Y_AXIS));
+        methodPanel.add(methodScroll);
+        methodPanel.add(methodArgsTextField);
+        methodPanel.add(methodInvokeButton);
+        add(methodPanel);
         
         pack();
         setSize(getPreferredSize());
@@ -117,7 +154,6 @@ public class InterpretView extends JFrame {
         } catch (ClassNotFoundException | InstantiationException
                 | IllegalAccessException | UnsupportedLookAndFeelException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
         }
     }
 
@@ -157,6 +193,13 @@ public class InterpretView extends JFrame {
     }
 
     /**
+     * @return the methodJList
+     */
+    public JList<Method> getMethodJList() {
+        return methodJList;
+    }
+    
+    /**
      * @return the fieldLabel
      */
     public JLabel getFieldLabel() {
@@ -173,10 +216,43 @@ public class InterpretView extends JFrame {
     /**
      * @return the argsTextField
      */
-    public JTextField getArgsTextField() {
-        return argsTextField;
+    public JTextField getConstArgsTextField() {
+        return constArgsTextField;
     }
 
+    /**
+     * @return the fieldSetButton
+     */
+    public JButton getFieldSetButton() {
+        return fieldSetButton;
+    }
     
+    /**
+     * @return the methodArgsTextField
+     */
+    public JTextField getMethodArgsTextField() {
+        return methodArgsTextField;
+    }
+
+    /**
+     * @return the methodInvokeButton
+     */
+    public JButton getMethodInvokeButton() {
+        return methodInvokeButton;
+    }
+
+    /**
+     * @return the arraySizeField
+     */
+    public JTextField getArraySizeField() {
+        return arraySizeField;
+    }
+
+    /**
+     * @return the createArrayButton
+     */
+    public JButton getCreateArrayButton() {
+        return createArrayButton;
+    }
     
 }

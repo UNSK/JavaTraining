@@ -1,10 +1,10 @@
 package interpret;
 
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
@@ -23,17 +23,25 @@ public class ObjectManager {
     public static DefaultListModel<Field> fieldListModel = new DefaultListModel<>(); 
     public static DefaultListModel<Method> methodListModel = new DefaultListModel<>();
 
-    public void createObject(Constructor<?> constructor, Object...args) {
-            Object obj = null;
-            System.out.println(constructor);
-            try {
-                obj = constructor.newInstance(args);
-            } catch (InstantiationException | IllegalAccessException
-                    | IllegalArgumentException | InvocationTargetException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+    public void createObject(Constructor<?> constructor, Object... args) {
+        try {
+            Object obj = constructor.newInstance(args);
             objectListModel.addElement(obj);
+        } catch (InstantiationException | IllegalAccessException
+                | IllegalArgumentException | InvocationTargetException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    
+    public void createArray(Class<?> cls, int size) {
+        try {
+            Object array = Array.newInstance(cls, size);
+            objectListModel.addElement(array);
+        } catch (NegativeArraySizeException e) {
+            //TODO handling exception
+            e.printStackTrace();
+        }
     }
     
     //HACK list**** should write to an only method.
@@ -50,13 +58,18 @@ public class ObjectManager {
     }
     
     public void listFields(Class<?> cls) {
-        for (Field f : cls.getFields()) {
-            fieldListModel.addElement(f);
-        }
-        List<Field> list = Arrays.asList(cls.getFields());
-        for (Field f : cls.getDeclaredFields()) {
-            if(!list.contains(f)) 
+        if (cls.isArray()) {
+            
+        } else {
+            for (Field f : cls.getFields()) {
                 fieldListModel.addElement(f);
+            }
+            List<Field> list = Arrays.asList(cls.getFields());
+            for (Field f : cls.getDeclaredFields()) {
+                if (!list.contains(f)) {
+                    fieldListModel.addElement(f);
+                }
+            }
         }
     }
     
@@ -66,8 +79,9 @@ public class ObjectManager {
         }
         List<Method> list = Arrays.asList(cls.getMethods());
         for (Method m : cls.getDeclaredMethods()) {
-            if(!list.contains(m))
+            if (!list.contains(m)) {
                 methodListModel.addElement(m);
+            }
         }
     }
     

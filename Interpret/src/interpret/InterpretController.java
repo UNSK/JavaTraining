@@ -4,6 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.regex.Pattern;
 
@@ -21,6 +23,10 @@ public class InterpretController {
     private final InterpretView view;
     private final ObjectManager objectManager;
     
+    private Class<?> selectedClass;
+    private Object selectedObject;
+    private Field selectedField;
+    private Method selectedMethod;
 
    
     public InterpretController() {
@@ -29,7 +35,6 @@ public class InterpretController {
     }
     
     public void control() {
-        
         //add action listener to class name text field
         view.getCNameField().addActionListener(new ActionListener() {
             @Override
@@ -37,7 +42,8 @@ public class InterpretController {
                 objectManager.clearConstructorList();
                 String className = view.getCNameField().getText();
                 try {
-                    objectManager.listConstructors(Class.forName(className));
+                    selectedClass = Class.forName(className);
+                    objectManager.listConstructors(selectedClass);
                 } catch (ClassNotFoundException ex) {
                     
                     ex.printStackTrace();
@@ -56,11 +62,19 @@ public class InterpretController {
                     return;
                 }
                 Constructor<?> constructor = ObjectManager.getConstructorListModel().getElementAt(constIndex);
-                String[] argText = view.getArgsTextField().getText().split(",[\\s]+");
+                String[] argText = view.getConstArgsTextField().getText().split(",[\\s]+");
                 Type[] parameters = constructor.getParameterTypes();
                 Object[] args = stringsToArgs(argText, parameters);
-                for(Object o: args) System.out.println(o);
                 objectManager.createObject(constructor, args);
+            }
+        });
+        
+        //add create array button listener
+        view.getCreateArrayButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int size = Integer.parseInt(view.getArraySizeField().getText());
+                objectManager.createArray(selectedClass, size);
             }
         });
         
@@ -69,14 +83,15 @@ public class InterpretController {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 int index = view.getObjectJList().getSelectedIndex();
-                Class<?> cls = ObjectManager
-                        .getObjectListModel().getElementAt(index).getClass();
+                selectedObject = ObjectManager.getObjectListModel().getElementAt(index);
+                Class<?> cls = selectedObject.getClass();
               
                 objectManager.clearFieldList();
                 objectManager.clearMethodList();
                 
                 objectManager.listFields(cls);
                 objectManager.listMethods(cls);
+                
             }
         });
         
@@ -85,19 +100,63 @@ public class InterpretController {
             @Override
             public void valueChanged(ListSelectionEvent arg0) {
                 int index = view.getFieldJList().getSelectedIndex();
-                Field field = ObjectManager.getFieldListModel().getElementAt(index);
-                view.getFieldLabel().setText(field.getName());
+                selectedField = ObjectManager.getFieldListModel().getElementAt(index);
+                //view.getFieldLabel().setText(field.getName());
                 //print value
-                field.setAccessible(true);
-                int objectListIndex = view.getObjectJList().getSelectedIndex();
+                selectedField.setAccessible(true);
+                //int objectListIndex = view.getObjectJList().getSelectedIndex();
                 Object value = null;
                 try {
-                    value = field.get(ObjectManager.getObjectListModel().getElementAt(objectListIndex));
+                    value = selectedField.get(selectedObject);
                 } catch (IllegalArgumentException | IllegalAccessException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 } 
                 view.getValueField().setText(value.toString());
+            }
+        });
+        
+        //add field set button performed
+        view.getFieldSetButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String inputValue = view.getValueField().getText();
+                try {
+                    selectedField.set(selectedObject,
+                            convertToType(inputValue, selectedField.getType()));
+                } catch (IllegalArgumentException | IllegalAccessException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+                
+            }
+        });
+        
+        //add method jList listener
+        view.getMethodJList().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent arg0) {
+                int index = view.getMethodJList().getSelectedIndex();
+                selectedMethod = ObjectManager.getMethodListModel().elementAt(index);
+            }
+        });
+        
+        //add method invoke button
+        view.getMethodInvokeButton().addActionListener(new ActionListener() {            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String[] argText = view.getMethodArgsTextField().getText().split(",[\\s]+");
+                Type[] parameters = selectedMethod.getParameterTypes();
+                Object[] args = stringsToArgs(argText, parameters);
+                //TODO handling return value
+                try {
+                    selectedMethod.invoke(selectedObject, args);
+                } catch (IllegalAccessException | IllegalArgumentException ex) {
+                    // TODO Auto-generated catch block
+                    ex.printStackTrace();
+                } catch (InvocationTargetException ex) {
+                    ex.getCause().printStackTrace();
+                }
             }
         });
         
