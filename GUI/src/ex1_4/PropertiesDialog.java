@@ -60,7 +60,7 @@ public class PropertiesDialog extends Dialog {
 		/* font name choice */
 		Label fontNameLabel = new Label("Font name: ");
 		fontNameLabel.setAlignment(Label.RIGHT);
-		addContent(fontNameLabel, 0, 0, 2, 1);
+		addContent(fontNameLabel, 0, 0, 1);
 		
 		final Choice fontChoice = new Choice();
 		GraphicsEnvironment ge =
@@ -70,49 +70,49 @@ public class PropertiesDialog extends Dialog {
 			fontChoice.add(name);
 		}
 		fontChoice.select(currentFont.getFamily());
-		addContent(fontChoice, 2, 0, 2, 1);
+		addContent(fontChoice, GridBagConstraints.RELATIVE, 0, 2);
 		
 		/* font size choice */
 		Label fontSizeLabel = new Label("Font size: ");
 		fontSizeLabel.setAlignment(Label.RIGHT);
-		addContent(fontSizeLabel, 0, 1, 2, 1);
+		addContent(fontSizeLabel, 0, 1, 1);
 		
 		final Choice fsizeChoice = new Choice();
 		for (int i = MIN_SIZE; i < MAX_SIZE; i += 2) {
 			fsizeChoice.add(Integer.toString(i));
 		}
 		fsizeChoice.select(Integer.toString(currentFont.getSize()));
-		addContent(fsizeChoice, 2, 1, 2, 1);
+		addContent(fsizeChoice, GridBagConstraints.RELATIVE, 1, 2);
 		
 		/* font color */
 		Label fontColorLabel = new Label("Font Color: ");
 		fontColorLabel.setAlignment(Label.RIGHT);
-		addContent(fontColorLabel, 0, 2, 2, 1);
+		addContent(fontColorLabel, 0, 2, 1);
 		
 		final Choice fcolorChoice = new Choice();
 		for (Color colors : COLORS) {
 			fcolorChoice.add(getColorName(colors));
 		}
 		fcolorChoice.select(getColorName(currentClockColor));
-		addContent(fcolorChoice, 2, 2, 2, 1);
+		addContent(fcolorChoice, GridBagConstraints.RELATIVE, 2, 2);
 		
 		/* frame back ground color */
 		Label bgColorLabel = new Label("Background Color: ");
 		bgColorLabel.setAlignment(Label.RIGHT);
-		addContent(bgColorLabel, 0, 3, 2, 1);
+		addContent(bgColorLabel, 0, 3, 1);
 
 		final Choice bgColorChoice = new Choice();
 		for (Color colors : COLORS) {
 			bgColorChoice.add(getColorName(colors));
 		}
 		bgColorChoice.select(getColorName(currentBGColor));
-		addContent(bgColorChoice, 2, 3, 2, 1);
+		addContent(bgColorChoice, GridBagConstraints.RELATIVE, 3, 2);
 		
 		//FIXME forcibly
-		addContent(new Label(""), 0, 4, 4, 1);
+		addContent(new Label(""), 0, 4, 1);
 		
 		Button okButton = new Button("Apply");
-		addContent(okButton, 2, 4, 1, 1);
+		addContent(okButton, 2, 4, 1, 60);
 		okButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -136,7 +136,7 @@ public class PropertiesDialog extends Dialog {
 		});
 		
 		Button cancelButton = new Button("Cancel");
-		addContent(cancelButton, 3, 4, 1, 1);
+		addContent(cancelButton, 3, 4, 1);
 		cancelButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -198,16 +198,31 @@ public class PropertiesDialog extends Dialog {
 	 * @param x grid x
 	 * @param y grid y
  	 * @param w grid width
-	 * @param h grid height
 	 */
-	private void addContent(Component c, int x, int y, int w, int h) {
+	private void addContent(Component c, int x, int y, int w) {
 	    GridBagConstraints gbc = new GridBagConstraints();
 	    gbc.fill = GridBagConstraints.BOTH;
 	    gbc.gridy = y;
         gbc.gridwidth = w;
-        gbc.gridheight = h;
-
         gbl.setConstraints(c, gbc);
         add(c);
 	}
+	
+	   /**
+     * add a content to GridBagLayout
+     * @param c component
+     * @param x grid x
+     * @param y grid y
+     * @param w grid width
+     * @param ipadx padding
+     */
+    private void addContent(Component c, int x, int y, int w, int ipadx) {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridy = y;
+        gbc.gridwidth = w;
+        gbc.ipadx = ipadx;
+        gbl.setConstraints(c, gbc);
+        add(c);
+    }
 }
