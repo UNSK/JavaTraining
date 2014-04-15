@@ -8,6 +8,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
@@ -79,14 +82,23 @@ public class ObjectManager {
                 arrayValueListModel.addElement(cls.getSimpleName() + "[" + i + "]");
             }
         } else {
+        	List<Field> list = new LinkedList<>();
             for (Field f : cls.getFields()) {
-                fieldListModel.addElement(f);
+            	list.add(f);
             }
-            List<Field> list = Arrays.asList(cls.getFields());
             for (Field f : cls.getDeclaredFields()) {
                 if (!list.contains(f)) {
-                    fieldListModel.addElement(f);
+                	list.add(f);
                 }
+            }
+            Collections.sort(list, new Comparator<Field>() {
+				@Override
+				public int compare(Field o1, Field o2) {
+					return o1.getName().compareTo(o2.getName());
+				}
+			});
+            for (Field f : list) {
+            	fieldListModel.addElement(f);
             }
         }
     }
@@ -95,14 +107,23 @@ public class ObjectManager {
         if (cls.isArray()) {
             return;
         }
+        List<Method> list = new LinkedList<>();
         for (Method m : cls.getMethods()) {
-            methodListModel.addElement(m);
+        	list.add(m);
         }
-        List<Method> list = Arrays.asList(cls.getMethods());
         for (Method m : cls.getDeclaredMethods()) {
             if (!list.contains(m)) {
-                methodListModel.addElement(m);
+                list.add(m);
             }
+        }
+        Collections.sort(list, new Comparator<Method>() {
+			@Override
+			public int compare(Method o1, Method o2) {
+				 return o1.getName().compareTo(o2.getName());
+			}
+		});
+        for (Method m : list) {
+        	methodListModel.addElement(m);
         }
     }
     

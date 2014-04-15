@@ -9,14 +9,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.lang.model.element.Element;
-import javax.swing.JLabel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import org.omg.CORBA.DynAnyPackage.Invalid;
 
 
 /**
@@ -50,10 +47,10 @@ public class InterpretController {
                 try {
                     selectedClass = Class.forName(className);
                     objectManager.listConstructors(selectedClass);
-                    view.setStatus("OK", Color.BLACK);
+                    InterpretView.setStatus("OK", Color.BLACK);
                 } catch (ClassNotFoundException ex) {
                     ex.printStackTrace();
-                    view.setStatus(ex.toString(), Color.RED);
+                    InterpretView.setStatus(ex.toString(), Color.RED);
                 }
             }
         });
@@ -66,7 +63,7 @@ public class InterpretController {
                 System.out.println(constIndex);
                 if (constIndex == -1) {
                     System.err.println("Select a constructor.");
-                    view.setStatus("Select a constructor.", Color.RED);
+                    InterpretView.setStatus("Select a constructor.", Color.RED);
                     return;
                 }
                 Constructor<?> constructor = ObjectManager.getConstructorListModel().getElementAt(constIndex);
@@ -74,6 +71,7 @@ public class InterpretController {
                 Type[] parameters = constructor.getParameterTypes();
                 Object[] args = stringsToArgs(argText, parameters);
                 objectManager.createObject(constructor, args);
+                InterpretView.setStatus("OK", Color.BLACK);
             }
         });
         
@@ -81,8 +79,13 @@ public class InterpretController {
         view.getCreateArrayButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int size = Integer.parseInt(view.getArraySizeField().getText());
-                objectManager.createArray(selectedClass, size);
+            	try {
+            		int size = Integer.parseInt(view.getArraySizeField().getText());
+            		objectManager.createArray(selectedClass, size);
+            		InterpretView.setStatus("OK", Color.BLACK);
+            	} catch (NumberFormatException ex) {
+            		InterpretView.setStatus("invalid size", Color.RED);
+            	}
             }
         });
         
@@ -125,7 +128,7 @@ public class InterpretController {
                     view.getValueField().setText(value.toString());
                 } catch (IllegalArgumentException | IllegalAccessException e) {
                     e.printStackTrace();
-                    view.setStatus(e.toString(), Color.RED);
+                    InterpretView.setStatus(e.toString(), Color.RED);
                 } 
                 
             }
@@ -158,7 +161,7 @@ public class InterpretController {
                 int constIndex = view.getConstructorJList().getSelectedIndex();
                 System.out.println(constIndex);
                 if (constIndex == -1) {
-                    view.setStatus("Select a constructor", Color.RED);
+                    InterpretView.setStatus("Select a constructor", Color.RED);
                     return;
                 }
                 Constructor<?> constructor = ObjectManager.getConstructorListModel().getElementAt(constIndex);
@@ -169,6 +172,7 @@ public class InterpretController {
                 selectedArrayElem = Array.get(selectedObject, selectedArrIndex);
                 objectManager.listFields(selectedArrayElem.getClass(), selectedArrayElem);
                 objectManager.listMethods(selectedArrayElem.getClass());
+                InterpretView.setStatus("OK", Color.BLACK);
             }
         });
         
@@ -185,8 +189,9 @@ public class InterpretController {
                         selectedField.set(selectedObject,
                                 convertToType(inputValue, selectedField.getType()));
                     }
+                    InterpretView.setStatus("OK", Color.BLACK);
                 } catch (IllegalArgumentException | IllegalAccessException ex) {
-                    view.setStatus(ex.toString(), Color.RED);
+                    InterpretView.setStatus(ex.toString(), Color.RED);
                     ex.printStackTrace();
                 }
                 
@@ -198,7 +203,10 @@ public class InterpretController {
             @Override
             public void valueChanged(ListSelectionEvent arg0) {
                 int index = view.getMethodJList().getSelectedIndex();
+                //FIXME unstable
+                if (index == -1) return;
                 selectedMethod = ObjectManager.getMethodListModel().elementAt(index);
+                view.getMethodArgsTextField().setText("");
             }
         });
         
@@ -221,11 +229,12 @@ public class InterpretController {
                         retVal = "void";
                     }
                     view.getRetValField().setText(retVal.toString());
+                    InterpretView.setStatus("OK", Color.BLACK);
                 } catch (IllegalAccessException | IllegalArgumentException ex) {
-                    view.setStatus(ex.toString(), Color.RED);
+                    InterpretView.setStatus(ex.toString(), Color.RED);
                     ex.printStackTrace();
                 } catch (InvocationTargetException ex) {
-                    view.setStatus(ex.getCause().toString(), Color.RED);
+                    InterpretView.setStatus(ex.getCause().toString(), Color.RED);
                     ex.getCause().printStackTrace();
                 }
             }
@@ -235,7 +244,7 @@ public class InterpretController {
     
     private Object[] stringsToArgs(String[] strings, Type[] argTypes) {
         if (strings.length != argTypes.length && strings.length != 1) {
-            System.err.println("invalid arguments");
+        	InterpretView.setStatus("invalid arguments", Color.RED);
             throw new IllegalArgumentException();
         }
         //no argument
@@ -245,8 +254,7 @@ public class InterpretController {
         
         Object[] args = new Object[argTypes.length];
         for (int i = 0; i < args.length; i++) {
-            if (strings[i].startsWith("#") ||
-                    strings[i].startsWith("&")) {
+            if (strings[i].startsWith("#")) {
                 args[i] = assignInstance(strings[i], argTypes[i]);
             } else {
                 args[i] = convertToType(strings[i], argTypes[i]);
@@ -274,6 +282,7 @@ public class InterpretController {
             if (str.matches("\'.\'")) {
                 return str.charAt(1);
             } else {
+            	InterpretView.setStatus("failed to parse char (ex. 'c')", Color.RED);
                 throw new IllegalArgumentException("failed to parse character");
             }
         } else if (type.equals(Float.class) || type.equals(float.class)) {
@@ -288,6 +297,7 @@ public class InterpretController {
             if (str.matches("\".*\"")) {
                 return str.replaceAll("\"", "");
             } else {
+            	InterpretView.setStatus("failed to parse String (ex. \"hoge\")", Color.RED);
                 throw new IllegalArgumentException("failed to parse String");
             }
         } else {
@@ -296,17 +306,31 @@ public class InterpretController {
     }
     
     private Object assignInstance(String str, Type type) {
-        if (str.startsWith("#")) { //instance
-            int index = Integer.parseInt(str.substring(1));
-            Object argObj = ObjectManager.getObjectListModel().getElementAt(index);
-            return argObj;
-        } else if (str.startsWith("&")) { //array element
-            int index = Integer.parseInt(str.substring(1));
-            Object argObj = ObjectManager.getArrayValueListModel().getElementAt(index);
-            return argObj;
+        if (str.startsWith("#")) {
+        	try {
+        		if (str.contains("[")) { //array
+        			Pattern p = Pattern.compile("#(.+)?\\[");
+        			Matcher m = p.matcher(str);
+        			m.find();
+        			int objIndex = Integer.parseInt(m.group(1));
+        			p = Pattern.compile("\\[(.+)?\\]");
+        			m = p.matcher(str);
+        			m.find();
+        			int arrIndex = Integer.parseInt(m.group(1));
+        			Object obj = ObjectManager.getObjectListModel().getElementAt(objIndex);
+        			return Array.get(obj, arrIndex);
+        		} else {
+        			int index = Integer.parseInt(str.substring(1));
+        			return ObjectManager.getObjectListModel().getElementAt(index);
+        		}
+        	} catch (Exception e) {
+        		InterpretView.setStatus(e.toString(), Color.RED);
+        		throw new IllegalArgumentException();
+        	}
         } else {
             throw new Error();
         }
+    	
     }
 
 }

@@ -3,7 +3,6 @@ package interpret;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -54,7 +53,8 @@ public class InterpretView extends JFrame {
 
 
     private String[] cNameList = {
-            "java.lang.String", "java.lang.Double", "interpret.TestSub"};
+            "java.lang.String", "java.lang.Double", "interpret.TestSub",
+            "java.awt.Frame"};
 
     /**
      * construct Interpret
@@ -140,7 +140,7 @@ public class InterpretView extends JFrame {
         
         
         //field details
-        valueField = new JTextField("value", 10);
+        valueField = new JTextField();
         //field set button
         fieldSetButton = new JButton("Set");
 
