@@ -1,6 +1,8 @@
 package interpret;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.lang.reflect.Constructor;
@@ -42,7 +44,7 @@ public class InterpretView extends JFrame {
     private JList<Object> arrayJList;
     private JLabel fieldLabel;
     private JTextField valueField;
-    private JLabel statusBar;
+    private static JLabel statusBar;
     
     private JButton fieldSetButton;
     private JTextField methodArgsTextField;
@@ -63,6 +65,7 @@ public class InterpretView extends JFrame {
         setTitle("Interpret");
         setSize(500, 500);
         
+        Dimension dim = new Dimension(400, 150);
         
         cNameCombo = new JComboBox<>(cNameList);
         cNameCombo.setSelectedIndex(-1);
@@ -77,7 +80,7 @@ public class InterpretView extends JFrame {
         constructorJList = new JList<>(ObjectManager.getConstructorListModel());
         JScrollPane constructorScroll = new JScrollPane();
         constructorScroll.getViewport().setView(constructorJList);
-        constructorScroll.setPreferredSize(null);
+        constructorScroll.setPreferredSize(dim);
         //add(constructorScroll);
         
         //arguments text field
@@ -101,14 +104,14 @@ public class InterpretView extends JFrame {
         objectJList = new JList<>(ObjectManager.getObjectListModel());
         JScrollPane objectScroll = new JScrollPane();
         objectScroll.getViewport().setView(objectJList);
-        objectScroll.setPreferredSize(null);
+        objectScroll.setPreferredSize(dim);
         //add(objectScroll);
         
         //array value list
         arrayJList = new JList<>(ObjectManager.getArrayValueListModel());
         JScrollPane arrElemScroll = new JScrollPane();
         arrElemScroll.getViewport().setView(arrayJList);
-        arrElemScroll.setPreferredSize(null);
+        arrElemScroll.setPreferredSize(dim);
         
         //element instantiate 
         arrConstTextField = new JTextField();
@@ -133,7 +136,7 @@ public class InterpretView extends JFrame {
         fieldJList = new JList<>(ObjectManager.getFieldListModel());
         JScrollPane fieldScroll = new JScrollPane();
         fieldScroll.getViewport().setView(fieldJList);
-        fieldScroll.setPreferredSize(null);
+        fieldScroll.setPreferredSize(dim);
         
         
         //field details
@@ -157,7 +160,7 @@ public class InterpretView extends JFrame {
         methodJList = new JList<>(ObjectManager.getMethodListModel());
         JScrollPane methodScroll = new JScrollPane();
         methodScroll.getViewport().setView(methodJList);
-        methodScroll.setPreferredSize(null);
+        methodScroll.setPreferredSize(dim);
         
         //method arguments text field
         methodArgsTextField = new JTextField(10);   
@@ -189,7 +192,7 @@ public class InterpretView extends JFrame {
         membersPanel.add(methodPanel);
         add(membersPanel, BorderLayout.EAST);
         
-        statusBar = new JLabel("ok");
+        statusBar = new JLabel("Ready");
         add(statusBar, BorderLayout.SOUTH);
         
         pack();
@@ -203,6 +206,11 @@ public class InterpretView extends JFrame {
         }
     }
 
+    public static void setStatus(String msg, Color color) {
+        statusBar.setText(msg);
+        statusBar.setForeground(color);
+    }
+    
     /**
      * @return the cNameCombo
      */

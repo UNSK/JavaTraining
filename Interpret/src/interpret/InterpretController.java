@@ -1,5 +1,6 @@
 package interpret;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.Array;
@@ -11,6 +12,7 @@ import java.lang.reflect.Type;
 import java.util.regex.Pattern;
 
 import javax.lang.model.element.Element;
+import javax.swing.JLabel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -38,6 +40,7 @@ public class InterpretController {
     }
     
     public void control() {
+        
         //add action listener to class name text field
         view.getCNameField().addActionListener(new ActionListener() {
             @Override
@@ -47,9 +50,10 @@ public class InterpretController {
                 try {
                     selectedClass = Class.forName(className);
                     objectManager.listConstructors(selectedClass);
+                    view.setStatus("OK", Color.BLACK);
                 } catch (ClassNotFoundException ex) {
-                    
                     ex.printStackTrace();
+                    view.setStatus(ex.toString(), Color.RED);
                 }
             }
         });
@@ -62,6 +66,7 @@ public class InterpretController {
                 System.out.println(constIndex);
                 if (constIndex == -1) {
                     System.err.println("Select a constructor.");
+                    view.setStatus("Select a constructor.", Color.RED);
                     return;
                 }
                 Constructor<?> constructor = ObjectManager.getConstructorListModel().getElementAt(constIndex);
@@ -119,8 +124,8 @@ public class InterpretController {
                     }
                     view.getValueField().setText(value.toString());
                 } catch (IllegalArgumentException | IllegalAccessException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
+                    view.setStatus(e.toString(), Color.RED);
                 } 
                 
             }
@@ -153,7 +158,7 @@ public class InterpretController {
                 int constIndex = view.getConstructorJList().getSelectedIndex();
                 System.out.println(constIndex);
                 if (constIndex == -1) {
-                    System.err.println("Select a constructor.");
+                    view.setStatus("Select a constructor", Color.RED);
                     return;
                 }
                 Constructor<?> constructor = ObjectManager.getConstructorListModel().getElementAt(constIndex);
@@ -180,9 +185,9 @@ public class InterpretController {
                         selectedField.set(selectedObject,
                                 convertToType(inputValue, selectedField.getType()));
                     }
-                } catch (IllegalArgumentException | IllegalAccessException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
+                } catch (IllegalArgumentException | IllegalAccessException ex) {
+                    view.setStatus(ex.toString(), Color.RED);
+                    ex.printStackTrace();
                 }
                 
             }
@@ -213,14 +218,14 @@ public class InterpretController {
                         retVal = selectedMethod.invoke(selectedObject, args);
                     }
                     if (retVal == null) {
-                        System.out.println("void");
                         retVal = "void";
                     }
                     view.getRetValField().setText(retVal.toString());
                 } catch (IllegalAccessException | IllegalArgumentException ex) {
-                    // TODO Auto-generated catch block
+                    view.setStatus(ex.toString(), Color.RED);
                     ex.printStackTrace();
                 } catch (InvocationTargetException ex) {
+                    view.setStatus(ex.getCause().toString(), Color.RED);
                     ex.getCause().printStackTrace();
                 }
             }

@@ -1,6 +1,7 @@
 package interpret;
 
 
+import java.awt.Color;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -14,11 +15,11 @@ import javax.swing.ListModel;
 
 public class ObjectManager {
     
-    public static DefaultListModel<Constructor<?>> constructorListModel = new DefaultListModel<>();
-    public static DefaultListModel<Object> objectListModel = new DefaultListModel<>();
-    public static DefaultListModel<Field> fieldListModel = new DefaultListModel<>(); 
-    public static DefaultListModel<Method> methodListModel = new DefaultListModel<>();
-    public static DefaultListModel<Object> arrayValueListModel = new DefaultListModel<>();
+    private static DefaultListModel<Constructor<?>> constructorListModel = new DefaultListModel<>();
+    private static DefaultListModel<Object> objectListModel = new DefaultListModel<>();
+    private static DefaultListModel<Field> fieldListModel = new DefaultListModel<>(); 
+    private static DefaultListModel<Method> methodListModel = new DefaultListModel<>();
+    private static DefaultListModel<Object> arrayValueListModel = new DefaultListModel<>();
 
     public void createObject(Constructor<?> constructor, Object... args) {
         try {
@@ -26,9 +27,10 @@ public class ObjectManager {
             objectListModel.addElement(obj);
         } catch (InstantiationException | IllegalAccessException
                 | IllegalArgumentException e) {
-            // TODO Auto-generated catch block
+            InterpretView.setStatus(e.toString(), Color.RED);
             e.printStackTrace();
         } catch (InvocationTargetException e) {
+            InterpretView.setStatus(e.toString(), Color.RED);
             e.getCause().printStackTrace();
             
         }
@@ -39,7 +41,7 @@ public class ObjectManager {
             Object array = Array.newInstance(cls, size);
             objectListModel.addElement(array);
         } catch (NegativeArraySizeException e) {
-            //TODO handling exception
+            InterpretView.setStatus(e.toString(), Color.RED);
             e.printStackTrace();
         }
     }
@@ -50,8 +52,10 @@ public class ObjectManager {
             Array.set(array, index, obj);
         } catch (InstantiationException | IllegalAccessException
                 | IllegalArgumentException e) {
+            InterpretView.setStatus(e.toString(), Color.RED);
             e.printStackTrace();
         } catch (InvocationTargetException e) {
+            InterpretView.setStatus(e.getCause().toString(), Color.RED);
             e.getCause().printStackTrace();
         }
     }
