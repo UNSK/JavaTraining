@@ -2,6 +2,7 @@ package interpret;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -27,6 +28,8 @@ public class InterpretController {
     private Object selectedObject;
     private Field selectedField;
     private Method selectedMethod;
+    private Object selectedArrayElem;
+    private int selectedArrIndex;
 
    
     public InterpretController() {
@@ -55,14 +58,14 @@ public class InterpretController {
         view.getCreateButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int constIndex = view.constructorJList.getSelectedIndex();
+                int constIndex = view.getConstructorJList().getSelectedIndex();
                 System.out.println(constIndex);
                 if (constIndex == -1) {
                     System.err.println("Select a constructor.");
                     return;
                 }
                 Constructor<?> constructor = ObjectManager.getConstructorListModel().getElementAt(constIndex);
-                String[] argText = view.getConstArgsTextField().getText().split(",[\\s]+");
+                String[] argText = view.getConstArgsTextField().getText().split(",[\\s]*");
                 Type[] parameters = constructor.getParameterTypes();
                 Object[] args = stringsToArgs(argText, parameters);
                 objectManager.createObject(constructor, args);
@@ -87,9 +90,10 @@ public class InterpretController {
                 Class<?> cls = selectedObject.getClass();
               
                 objectManager.clearFieldList();
+                objectManager.clearArrayList();
                 objectManager.clearMethodList();
-                
-                objectManager.listFields(cls);
+               
+                objectManager.listFields(cls, selectedObject);
                 objectManager.listMethods(cls);
                 
             }
@@ -101,18 +105,65 @@ public class InterpretController {
             public void valueChanged(ListSelectionEvent arg0) {
                 int index = view.getFieldJList().getSelectedIndex();
                 selectedField = ObjectManager.getFieldListModel().getElementAt(index);
-                //view.getFieldLabel().setText(field.getName());
                 //print value
                 selectedField.setAccessible(true);
-                //int objectListIndex = view.getObjectJList().getSelectedIndex();
                 Object value = null;
                 try {
-                    value = selectedField.get(selectedObject);
+                    if (selectedObject.getClass().isArray()) {
+                        value = selectedField.get(selectedArrayElem);
+                    } else {
+                        value = selectedField.get(selectedObject);
+                    }
+                    if (value == null) {
+                        value = "null";
+                    }
+                    view.getValueField().setText(value.toString());
                 } catch (IllegalArgumentException | IllegalAccessException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 } 
-                view.getValueField().setText(value.toString());
+                
+            }
+        });
+        
+        //add array value jList listener
+        view.getArrayJList().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                selectedArrIndex = view.getArrayJList().getSelectedIndex();
+                //FIXME unstable
+                if (selectedArrIndex == -1) return ;
+                System.out.println(selectedObject + " " +selectedArrIndex);
+                selectedArrayElem = Array.get(selectedObject, selectedArrIndex);
+                objectManager.clearConstructorList();
+                objectManager.listConstructors(selectedObject.getClass().getComponentType());
+                objectManager.clearFieldList();
+                objectManager.clearMethodList();
+                if (selectedArrayElem != null) {
+                    objectManager.listFields(selectedArrayElem.getClass(), selectedArrayElem);
+                    objectManager.listMethods(selectedArrayElem.getClass());
+                }
+            }
+        });
+        
+        //add array element instantiate listener
+        view.getArrInitButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int constIndex = view.getConstructorJList().getSelectedIndex();
+                System.out.println(constIndex);
+                if (constIndex == -1) {
+                    System.err.println("Select a constructor.");
+                    return;
+                }
+                Constructor<?> constructor = ObjectManager.getConstructorListModel().getElementAt(constIndex);
+                String[] argText = view.getArrConstTextField().getText().split(",[\\s]*");
+                Type[] parameters = constructor.getParameterTypes();
+                Object[] args = stringsToArgs(argText, parameters);
+                objectManager.initElement(selectedObject, selectedArrIndex, constructor, args);
+                selectedArrayElem = Array.get(selectedObject, selectedArrIndex);
+                objectManager.listFields(selectedArrayElem.getClass(), selectedArrayElem);
+                objectManager.listMethods(selectedArrayElem.getClass());
             }
         });
         
@@ -122,8 +173,13 @@ public class InterpretController {
             public void actionPerformed(ActionEvent e) {
                 String inputValue = view.getValueField().getText();
                 try {
-                    selectedField.set(selectedObject,
-                            convertToType(inputValue, selectedField.getType()));
+                    if (selectedObject.getClass().isArray()) {
+                        selectedField.set(selectedArrayElem,
+                                convertToType(inputValue, selectedField.getType()));
+                    } else {
+                        selectedField.set(selectedObject,
+                                convertToType(inputValue, selectedField.getType()));
+                    }
                 } catch (IllegalArgumentException | IllegalAccessException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
@@ -145,12 +201,22 @@ public class InterpretController {
         view.getMethodInvokeButton().addActionListener(new ActionListener() {            
             @Override
             public void actionPerformed(ActionEvent e) {
-                String[] argText = view.getMethodArgsTextField().getText().split(",[\\s]+");
+                String[] argText = view.getMethodArgsTextField().getText().split(",[\\s]*");
                 Type[] parameters = selectedMethod.getParameterTypes();
                 Object[] args = stringsToArgs(argText, parameters);
+                Object retVal;
                 //TODO handling return value
                 try {
-                    selectedMethod.invoke(selectedObject, args);
+                    if (selectedObject.getClass().isArray()) {
+                        retVal = selectedMethod.invoke(selectedArrayElem, args);
+                    } else {
+                        retVal = selectedMethod.invoke(selectedObject, args);
+                    }
+                    if (retVal == null) {
+                        System.out.println("void");
+                        retVal = "void";
+                    }
+                    view.getRetValField().setText(retVal.toString());
                 } catch (IllegalAccessException | IllegalArgumentException ex) {
                     // TODO Auto-generated catch block
                     ex.printStackTrace();
@@ -174,7 +240,12 @@ public class InterpretController {
         
         Object[] args = new Object[argTypes.length];
         for (int i = 0; i < args.length; i++) {
-            args[i] = convertToType(strings[i], argTypes[i]);
+            if (strings[i].startsWith("#") ||
+                    strings[i].startsWith("&")) {
+                args[i] = assignInstance(strings[i], argTypes[i]);
+            } else {
+                args[i] = convertToType(strings[i], argTypes[i]);
+            }
         }
         
         //not implemented yet
@@ -187,8 +258,7 @@ public class InterpretController {
      * @param type of Object you want to convert
      * @return Object
      */
-    private Object convertToType(String str, Type type) {
-        
+    private Object convertToType(String str, Type type) {      
         if (type.equals(Integer.class) || type.equals(int.class)) {
             return Integer.parseInt(str);
         } else if (type.equals(Boolean.class) || type.equals(boolean.class)) {
@@ -215,11 +285,23 @@ public class InterpretController {
             } else {
                 throw new IllegalArgumentException("failed to parse String");
             }
+        } else {
+            throw new Error("not primitive type");
         }
-        
-        
-        //not implemented yet
-        return null;
+    }
+    
+    private Object assignInstance(String str, Type type) {
+        if (str.startsWith("#")) { //instance
+            int index = Integer.parseInt(str.substring(1));
+            Object argObj = ObjectManager.getObjectListModel().getElementAt(index);
+            return argObj;
+        } else if (str.startsWith("&")) { //array element
+            int index = Integer.parseInt(str.substring(1));
+            Object argObj = ObjectManager.getArrayValueListModel().getElementAt(index);
+            return argObj;
+        } else {
+            throw new Error();
+        }
     }
 
 }

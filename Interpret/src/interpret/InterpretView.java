@@ -1,5 +1,6 @@
 package interpret;
 
+import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.lang.reflect.Constructor;
@@ -26,21 +27,27 @@ public class InterpretView extends JFrame {
     
     private static final long serialVersionUID = 1L;
     
-    public JTextField cNameField;
-    public JComboBox<String> cNameCombo;
-    public JButton createButton;
-    public JTextField arraySizeField;
-    public JButton createArrayButton;
-    public JTextField constArgsTextField;
-    public JList<Constructor<?>> constructorJList;
-    public JList<Field> fieldJList;
-    public JList<Object> objectJList;
-    public JList<Method> methodJList;
-    public JLabel fieldLabel;
-    public JTextField valueField;
-    public JButton fieldSetButton;
-    public JTextField methodArgsTextField;
-    public JButton methodInvokeButton;
+    private JTextField cNameField;
+    private JComboBox<String> cNameCombo;
+    private JButton createButton;
+    private JTextField arraySizeField;
+    private JButton createArrayButton;
+    private JTextField constArgsTextField;
+    private JTextField arrConstTextField;
+    private JButton arrInitButton;
+    private JList<Constructor<?>> constructorJList;
+    private JList<Field> fieldJList;
+    private JList<Object> objectJList;
+    private JList<Method> methodJList;
+    private JList<Object> arrayJList;
+    private JLabel fieldLabel;
+    private JTextField valueField;
+    private JLabel statusBar;
+    
+    private JButton fieldSetButton;
+    private JTextField methodArgsTextField;
+    private JButton methodInvokeButton;
+    private JTextField retValField;
     
 
 
@@ -51,7 +58,7 @@ public class InterpretView extends JFrame {
      * construct Interpret
      */
     public InterpretView() {
-        getContentPane().setLayout(new FlowLayout());
+        getContentPane().setLayout(new BorderLayout());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Interpret");
         setSize(500, 500);
@@ -74,11 +81,11 @@ public class InterpretView extends JFrame {
         //add(constructorScroll);
         
         //arguments text field
-        constArgsTextField = new JTextField("Arguments");
+        constArgsTextField = new JTextField();
         //create button
         createButton = new JButton("Create");
         //array size text field
-        arraySizeField = new JTextField("size");
+        arraySizeField = new JTextField();
         //add create array button
         createArrayButton = new JButton("Create Array");
         
@@ -97,13 +104,29 @@ public class InterpretView extends JFrame {
         objectScroll.setPreferredSize(null);
         //add(objectScroll);
         
+        //array value list
+        arrayJList = new JList<>(ObjectManager.getArrayValueListModel());
+        JScrollPane arrElemScroll = new JScrollPane();
+        arrElemScroll.getViewport().setView(arrayJList);
+        arrElemScroll.setPreferredSize(null);
+        
+        //element instantiate 
+        arrConstTextField = new JTextField();
+        arrInitButton = new JButton("Init Element");
+        JPanel arrInitPanel = new JPanel();
+        arrInitPanel.setLayout(new GridLayout(1, 1));
+        arrInitPanel.add(arrConstTextField);
+        arrInitPanel.add(arrInitButton);
+        
         JPanel creationPanel = new JPanel();
         creationPanel.setLayout(new BoxLayout(creationPanel, BoxLayout.Y_AXIS));
         creationPanel.add(cNameCombo);
         creationPanel.add(constructorScroll);
         creationPanel.add(creationSubPanel);
         creationPanel.add(objectScroll);
-        this.add(creationPanel);
+        creationPanel.add(arrElemScroll);
+        creationPanel.add(arrInitPanel);
+        this.add(creationPanel, BorderLayout.WEST);
         
         
         //field list
@@ -112,16 +135,18 @@ public class InterpretView extends JFrame {
         fieldScroll.getViewport().setView(fieldJList);
         fieldScroll.setPreferredSize(null);
         
+        
         //field details
         valueField = new JTextField("value", 10);
         //field set button
         fieldSetButton = new JButton("Set");
 
         JPanel fieldSubPanel = new JPanel();
-        fieldSubPanel.setLayout(new FlowLayout());
+        fieldSubPanel.setLayout(new GridLayout(1, 1));
         fieldSubPanel.add(valueField);
         fieldSubPanel.add(fieldSetButton);
         
+       
         JPanel fieldPanel = new JPanel();
         fieldPanel.setLayout(new BoxLayout(fieldPanel, BoxLayout.Y_AXIS));
         fieldPanel.add(fieldScroll);
@@ -138,13 +163,34 @@ public class InterpretView extends JFrame {
         methodArgsTextField = new JTextField(10);   
         //method invoke button
         methodInvokeButton = new JButton("Invoke");
+        //return value
+        JLabel retValJLabel = new JLabel("return value: ");
+        retValField = new JTextField("null");
+        retValField.setEditable(false);
+        
+        JPanel methodSubPanel = new JPanel();
+        methodSubPanel.setLayout(new GridLayout(2, 2));
+        methodSubPanel.add(methodArgsTextField);
+        methodSubPanel.add(methodInvokeButton);
+        methodSubPanel.add(retValJLabel);
+        methodSubPanel.add(retValField);
+        
         
         JPanel methodPanel = new JPanel();
         methodPanel.setLayout(new BoxLayout(methodPanel, BoxLayout.Y_AXIS));
         methodPanel.add(methodScroll);
-        methodPanel.add(methodArgsTextField);
-        methodPanel.add(methodInvokeButton);
+        methodPanel.add(methodSubPanel);
         add(methodPanel);
+        
+        
+        JPanel membersPanel = new JPanel();
+        membersPanel.setLayout(new BoxLayout(membersPanel, BoxLayout.Y_AXIS));
+        membersPanel.add(fieldPanel);
+        membersPanel.add(methodPanel);
+        add(membersPanel, BorderLayout.EAST);
+        
+        statusBar = new JLabel("ok");
+        add(statusBar, BorderLayout.SOUTH);
         
         pack();
         setSize(getPreferredSize());
@@ -179,6 +225,27 @@ public class InterpretView extends JFrame {
     }
     
     /**
+     * @return the arrConstTextField
+     */
+    public JTextField getArrConstTextField() {
+        return arrConstTextField;
+    }
+
+    /**
+     * @return the arrInitButton
+     */
+    public JButton getArrInitButton() {
+        return arrInitButton;
+    }
+
+    /**
+     * @return the constructorJList
+     */
+    public JList<Constructor<?>> getConstructorJList() {
+        return constructorJList;
+    }
+
+    /**
      * @return the fieldList() 
      */
     public JList<Field> getFieldJList() {
@@ -199,6 +266,13 @@ public class InterpretView extends JFrame {
         return methodJList;
     }
     
+    /**
+     * @return the arrayJList
+     */
+    public JList<Object> getArrayJList() {
+        return arrayJList;
+    }
+
     /**
      * @return the fieldLabel
      */
@@ -253,6 +327,20 @@ public class InterpretView extends JFrame {
      */
     public JButton getCreateArrayButton() {
         return createArrayButton;
+    }
+
+    /**
+     * @return the retValField
+     */
+    public JTextField getRetValField() {
+        return retValField;
+    }
+
+    /**
+     * @return the statusBar
+     */
+    public JLabel getStatusBar() {
+        return statusBar;
     }
     
 }
