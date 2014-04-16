@@ -16,7 +16,10 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -124,8 +127,14 @@ public class InterpretView extends JFrame {
         JPanel creationPanel = new JPanel();
         creationPanel.setLayout(new BoxLayout(creationPanel, BoxLayout.Y_AXIS));
         creationPanel.add(cNameCombo);
+        JLabel cLabel = new JLabel("Constructors");
+        cLabel.setAlignmentX(CENTER_ALIGNMENT);
+        creationPanel.add(cLabel);
         creationPanel.add(constructorScroll);
         creationPanel.add(creationSubPanel);
+        JLabel oLabel = new JLabel("Objects");
+        oLabel.setAlignmentX(CENTER_ALIGNMENT);
+        creationPanel.add(oLabel);
         creationPanel.add(objectScroll);
         creationPanel.add(arrElemScroll);
         creationPanel.add(arrInitPanel);
@@ -152,6 +161,9 @@ public class InterpretView extends JFrame {
        
         JPanel fieldPanel = new JPanel();
         fieldPanel.setLayout(new BoxLayout(fieldPanel, BoxLayout.Y_AXIS));
+        JLabel fLabel = new JLabel("Fileds", SwingConstants.CENTER);
+        fLabel.setAlignmentX(CENTER_ALIGNMENT);
+        fieldPanel.add(fLabel);
         fieldPanel.add(fieldScroll);
         fieldPanel.add(fieldSubPanel);
         add(fieldPanel);
@@ -181,15 +193,27 @@ public class InterpretView extends JFrame {
         
         JPanel methodPanel = new JPanel();
         methodPanel.setLayout(new BoxLayout(methodPanel, BoxLayout.Y_AXIS));
+        JLabel mLabel = new JLabel("Methods", SwingConstants.CENTER);
+        mLabel.setAlignmentX(CENTER_ALIGNMENT);
+        methodPanel.add(mLabel);
         methodPanel.add(methodScroll);
         methodPanel.add(methodSubPanel);
         add(methodPanel);
         
+        JTextArea usageText = new JTextArea();
+        usageText.append("USAGE:\n");
+        usageText.append("  String: put \" arround. (ex. \"foo\")\n"); 
+        usageText.append("  char: put ' arround. (ex. 'c')\n");
+        usageText.append("  Object: assign the number of instance in left pane, after #. (ex. #0)\n");
+        usageText.append("  Array: write the index after Object like in code. (ex. #1[2])");
+        usageText.setEditable(false);
+        usageText.setBackground(getBackground());
         
         JPanel membersPanel = new JPanel();
         membersPanel.setLayout(new BoxLayout(membersPanel, BoxLayout.Y_AXIS));
         membersPanel.add(fieldPanel);
         membersPanel.add(methodPanel);
+        membersPanel.add(usageText);
         add(membersPanel, BorderLayout.EAST);
         
         statusBar = new JLabel("Ready");
