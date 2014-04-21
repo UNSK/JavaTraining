@@ -12,13 +12,10 @@ import java.lang.reflect.Type;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.DefaultListModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-
-/**
- *
- */
 public class InterpretController {
     private final InterpretView view;
     private final ObjectManager objectManager;
@@ -68,10 +65,23 @@ public class InterpretController {
                 }
                 Constructor<?> constructor = ObjectManager.getConstructorListModel().getElementAt(constIndex);
                 String[] argText = view.getConstArgsTextField().getText().split(",[\\s]*");
+                if (argText[0].equals("")) {
+                    argText = new String[0];
+                }
                 Type[] parameters = constructor.getParameterTypes();
                 Object[] args = stringsToArgs(argText, parameters);
-                objectManager.createObject(constructor, args);
-                InterpretView.setStatus("OK", Color.BLACK);
+                try {
+                    objectManager.createObject(constructor, args);
+                    InterpretView.setStatus("OK", Color.BLACK);
+                } catch (InstantiationException | IllegalAccessException
+                        | IllegalArgumentException ex) {
+                    InterpretView.setStatus(ex.toString(), Color.RED);
+                    ex.printStackTrace();
+                } catch (InvocationTargetException ex) {
+                    InterpretView
+                            .setStatus(ex.getCause().toString(), Color.RED);
+                    ex.getCause().printStackTrace();
+                }
             }
         });
         
@@ -140,16 +150,18 @@ public class InterpretController {
             public void valueChanged(ListSelectionEvent e) {
                 selectedArrIndex = view.getArrayJList().getSelectedIndex();
                 //FIXME unstable
-                if (selectedArrIndex == -1) return ;
-                System.out.println(selectedObject + " " +selectedArrIndex);
+                if (selectedArrIndex == -1) return;
                 selectedArrayElem = Array.get(selectedObject, selectedArrIndex);
                 objectManager.clearConstructorList();
                 objectManager.listConstructors(selectedObject.getClass().getComponentType());
                 objectManager.clearFieldList();
                 objectManager.clearMethodList();
                 if (selectedArrayElem != null) {
+                    view.getValueField().setText("");
                     objectManager.listFields(selectedArrayElem.getClass(), selectedArrayElem);
                     objectManager.listMethods(selectedArrayElem.getClass());
+                } else {
+                    view.getValueField().setText("null");
                 }
             }
         });
@@ -215,9 +227,20 @@ public class InterpretController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String[] argText = view.getMethodArgsTextField().getText().split(",[\\s]*");
+                if (argText[0].equals("")) { //no argument input
+                    argText = new String[0];
+                }
                 Type[] parameters = selectedMethod.getParameterTypes();
-                Object[] args = stringsToArgs(argText, parameters);
                 Object retVal;
+                Object[] args = null;
+                try {
+                    args = stringsToArgs(argText, parameters);
+                } catch (Exception ex) {
+                    InterpretView.setStatus(ex.toString(), Color.RED); 
+                    ex.printStackTrace();
+                    return;
+                }
+                
                 //TODO handling return value
                 try {
                     if (selectedObject.getClass().isArray()) {
@@ -243,9 +266,9 @@ public class InterpretController {
     }
     
     private Object[] stringsToArgs(String[] strings, Type[] argTypes) {
-        if (strings.length != argTypes.length && strings.length != 1) {
+        if (strings.length != argTypes.length) {
         	InterpretView.setStatus("invalid arguments", Color.RED);
-            throw new IllegalArgumentException();
+        	throw new IllegalArgumentException();
         }
         //no argument
         if (argTypes.length == 0) {
@@ -269,7 +292,7 @@ public class InterpretController {
      * @param type of Object you want to convert
      * @return Object
      */
-    private Object convertToType(String str, Type type) {      
+    private Object convertToType(String str, Type type) throws NumberFormatException {      
         if (type.equals(Integer.class) || type.equals(int.class)) {
             return Integer.parseInt(str);
         } else if (type.equals(Boolean.class) || type.equals(boolean.class)) {

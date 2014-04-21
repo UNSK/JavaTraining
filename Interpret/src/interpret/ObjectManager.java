@@ -24,26 +24,19 @@ public class ObjectManager {
     private static DefaultListModel<Method> methodListModel = new DefaultListModel<>();
     private static DefaultListModel<Object> arrayValueListModel = new DefaultListModel<>();
 
-    public void createObject(Constructor<?> constructor, Object... args) {
-        try {
+    public void createObject(Constructor<?> constructor, Object... args)
+            throws InstantiationException, IllegalAccessException, 
+                   IllegalArgumentException, InvocationTargetException {
             Object obj = constructor.newInstance(args);
             objectListModel.addElement(obj);
-        } catch (InstantiationException | IllegalAccessException
-                | IllegalArgumentException e) {
-            InterpretView.setStatus(e.toString(), Color.RED);
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            InterpretView.setStatus(e.toString(), Color.RED);
-            e.getCause().printStackTrace();
-            
-        }
+        
     }
     
     public void createArray(Class<?> cls, int size) {
         try {
             Object array = Array.newInstance(cls, size);
             objectListModel.addElement(array);
-        } catch (NegativeArraySizeException e) {
+        } catch (NegativeArraySizeException | NullPointerException e) {
             InterpretView.setStatus(e.toString(), Color.RED);
             e.printStackTrace();
         }
@@ -79,7 +72,9 @@ public class ObjectManager {
     public void listFields(Class<?> cls, Object obj) {
         if (cls.isArray()) {
             for (int i = 0; i < Array.getLength(obj); i++) {
-                arrayValueListModel.addElement(cls.getSimpleName() + "[" + i + "]");
+                StringBuilder sb = new StringBuilder(cls.getSimpleName());
+                sb.delete(sb.length() - 2, sb.length());
+                arrayValueListModel.addElement(sb.toString() + "[" + i + "]");
             }
         } else {
         	List<Field> list = new LinkedList<>();

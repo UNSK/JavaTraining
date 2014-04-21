@@ -233,6 +233,7 @@ public class InterpretView extends JFrame {
     public static void setStatus(String msg, Color color) {
         statusBar.setText(msg);
         statusBar.setForeground(color);
+        
     }
     
     /**
