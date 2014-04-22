@@ -11,24 +11,29 @@ public class Game {
                 Class<? extends Player> classOf = 
                         loader.loadClass(name).asSubclass(Player.class);
                 Player player = classOf.newInstance();
-                Game game = new Game();
-                player.play(name);
+                Blackjack game = new Blackjack();
+                player.play(game);
                 game.reportScore(name);
             } catch (Exception e) {
                 reportException(name, e);
             }
         }
-
     }
 
     
-    private void reportScore(String name) {
+    public void playAITurn() {
+        System.out.println("I'm AI.");
+    }
+    
+    protected void reportScore(String name) {
         System.out.println("Player: " + name);
         System.out.println("Score : " + 100);
     }
     
     private static void reportException(String name, Exception e) {
-        //TODO
+        System.err.println(name + " " + e.toString());
     }
+    
+    
 
 }
