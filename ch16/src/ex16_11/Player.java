@@ -4,7 +4,7 @@ public abstract class Player {
     
     public final void play(Game game) {
         playMyTurn(game);
-        game.playAITurn();
+      //  game.playAITurn();
     }
     
     public abstract void playMyTurn(Game game);

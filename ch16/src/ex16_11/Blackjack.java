@@ -41,20 +41,29 @@ public class Blackjack extends Game {
     private List<Card> dealerHand = new ArrayList<>();
     
     private int playerScore = 0;
+    private int dealerScore = 0;
     private boolean isPlayerBusted = false;
     
     /** Construct Blackjack. Dealing the cards */
     public Blackjack() {
+
         dealerHand.add(Card.randomCard());
         playerHand.add(Card.randomCard());
         dealerHand.add(Card.randomCard());
         playerHand.add(Card.randomCard());
         
         System.out.println("Dealer hand : ??, " + dealerHand.get(1));
+        dealerScore += dealerHand.get(0).score +
+                       dealerHand.get(1).score;
+        if (dealerScore == 22) 
+            dealerScore = 12;
         System.out.println("Player hand : "
                 + playerHand.get(0) + ", " + playerHand.get(1));
         playerScore += playerHand.get(0).score +
                        playerHand.get(1).score;
+        if (playerScore == 22) {
+            playerScore = 12;
+        }
         System.out.println("Score: " + playerScore);
     }
     
@@ -62,7 +71,7 @@ public class Blackjack extends Game {
     @SuppressWarnings("incomplete-switch")
     public void hit() {
         Card card = Card.randomCard();
-        System.out.println("hit: " + card);
+        System.out.print("hit: " + card);
         playerScore += card.score;
         switch (card) {
         case SA: case HA: case DA: case CA: //if Ace
@@ -70,12 +79,48 @@ public class Blackjack extends Game {
                 playerScore -= 10;
             }
         }
+        System.out.println(", Score: " + playerScore);
         if (playerScore > 21) {
-            System.out.println("You busted!");
+            System.out.println("You busted. You lose...");
             isPlayerBusted = true;
         }
     }
-
+    
+    public void stand() {
+        System.out.println("open Dealer hand " + 
+                dealerHand.get(0) + ", " + dealerHand.get(1));
+        System.out.println("Score: " + dealerScore);
+        if (!isPlayerBusted) {
+            dealerPlay();
+        }
+    }
+    
+    @SuppressWarnings("incomplete-switch")
+    private void dealerPlay() {
+        while (dealerScore < 17 && dealerScore < playerScore) {
+            Card card = Card.randomCard();
+            System.out.print("Dealer hit: " + card);
+            dealerScore += card.score;
+            switch (card) {
+            case SA: case HA: case DA: case CA: //if Ace
+                if (dealerScore > 21) {
+                    dealerScore -= 10;
+                }
+            }
+            System.out.println(", Score: " + dealerScore);
+        }
+        
+        if (dealerScore > 21) {
+            System.out.println("Dealer busted. You win!");
+        } else if (dealerScore < playerScore) {
+            System.out.println("You win!");
+        } else if (dealerScore > playerScore) {
+            System.out.println("You lose...");
+        } else {
+            System.out.println("Draw Score. You lose...");
+        }
+    }
+   
     /**
      * @return the playerHand
      */
