@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import org.omg.CosNaming._BindingIteratorImplBase;
 
 /** Simple Blackjack */
 public class Blackjack extends Game {
@@ -21,7 +20,11 @@ public class Blackjack extends Game {
         private static final List<Card> CARDS = 
                 Collections.unmodifiableList(Arrays.asList(values()));
         private static final int SIZE = CARDS.size();
-        private static List<Card> pickedCards = new ArrayList<>();
+        private static List<Card> pickedCards;
+        public int score;
+        
+        Card(int score) { this.score = score; }
+        
         public static Card randomCard() {
             Card card = CARDS.get(new Random().nextInt(SIZE));
             if (pickedCards.contains(card)) {
@@ -31,22 +34,36 @@ public class Blackjack extends Game {
                 return card;
             }
         }
-        public int score;
-        Card(int score) { this.score = score; }
+        
+        public static void init() {
+            pickedCards = new ArrayList<>();
+        }
     }
     
     /** player's hand */
-    private List<Card> playerHand = new ArrayList<>();
+    private List<Card> playerHand;
     /** dealer's hand */
-    private List<Card> dealerHand = new ArrayList<>();
+    private List<Card> dealerHand;
     
-    private int playerScore = 0;
-    private int dealerScore = 0;
-    private boolean isPlayerBusted = false;
+    private int playerScore;
+    private int dealerScore;
+    private boolean isMached;
     
-    /** Construct Blackjack. Dealing the cards */
-    public Blackjack() {
-
+    private int playCount = 0;
+    private int playerWonCount = 0;
+    
+    
+    public void init() {
+        Card.init();
+        
+        playerHand = new ArrayList<>();
+        dealerHand = new ArrayList<>();
+        
+        playerScore = 0;
+        dealerScore = 0;
+        isMached = false;
+        playCount++;
+        
         dealerHand.add(Card.randomCard());
         playerHand.add(Card.randomCard());
         dealerHand.add(Card.randomCard());
@@ -57,14 +74,14 @@ public class Blackjack extends Game {
                        dealerHand.get(1).score;
         if (dealerScore == 22) 
             dealerScore = 12;
-        System.out.println("Player hand : "
+        System.out.print("Player hand : "
                 + playerHand.get(0) + ", " + playerHand.get(1));
         playerScore += playerHand.get(0).score +
                        playerHand.get(1).score;
         if (playerScore == 22) {
             playerScore = 12;
         }
-        System.out.println("Score: " + playerScore);
+        System.out.println(". Score: " + playerScore);
     }
     
     /** hit a card from deck */
@@ -82,22 +99,23 @@ public class Blackjack extends Game {
         System.out.println(", Score: " + playerScore);
         if (playerScore > 21) {
             System.out.println("You busted. You lose...");
-            isPlayerBusted = true;
+            System.out.println();
+            isMached = true;
         }
     }
     
     public void stand() {
-        System.out.println("open Dealer hand " + 
-                dealerHand.get(0) + ", " + dealerHand.get(1));
-        System.out.println("Score: " + dealerScore);
-        if (!isPlayerBusted) {
+        if (!isMached) {
             dealerPlay();
         }
     }
     
     @SuppressWarnings("incomplete-switch")
     private void dealerPlay() {
-        while (dealerScore < 17 && dealerScore < playerScore) {
+        System.out.print("open Dealer hand " + 
+                dealerHand.get(0) + ", " + dealerHand.get(1));
+        System.out.println(". Score: " + dealerScore);
+        while (dealerScore < 17) {
             Card card = Card.randomCard();
             System.out.print("Dealer hit: " + card);
             dealerScore += card.score;
@@ -112,15 +130,27 @@ public class Blackjack extends Game {
         
         if (dealerScore > 21) {
             System.out.println("Dealer busted. You win!");
+            playerWonCount++;
         } else if (dealerScore < playerScore) {
             System.out.println("You win!");
+            playerWonCount++;
         } else if (dealerScore > playerScore) {
             System.out.println("You lose...");
         } else {
-            System.out.println("Draw Score. You lose...");
+            System.out.println("Draw Score.");
         }
+        isMached = true;
+        System.out.println();
     }
    
+    @Override
+    protected void reportScore(String name) {
+        double winningRate = (double) playerWonCount / (double) playCount;
+        System.out.println("-- YOUR SCORE --");
+        System.out.println("Player: " + name);
+        System.out.println("Winning rate: " + winningRate + 
+                " (" + playerWonCount + "/" + playCount + ")");
+    }
     /**
      * @return the playerHand
      */
@@ -145,7 +175,7 @@ public class Blackjack extends Game {
     /**
      * @return the isPlayerBusted
      */
-    public boolean getIsPlayerBusted() {
-        return isPlayerBusted;
+    public boolean getIsMatched() {
+        return isMached;
     }
 }
