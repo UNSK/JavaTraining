@@ -160,9 +160,12 @@ public class InterpretController {
                     view.getValueField().setText("");
                     objectManager.listFields(selectedArrayElem.getClass(), selectedArrayElem);
                     objectManager.listMethods(selectedArrayElem.getClass());
+                    view.getArrElemValueField().setText(selectedArrayElem.toString());
                 } else {
-                    view.getValueField().setText("null");
+                    view.getArrElemValueField().setText("null");
                 }
+//                view.getArrElemValueField().setText(
+//                        selectedArrayElem == null ? "null" : selectedArrayElem.toString());
             }
         });
         
@@ -178,12 +181,16 @@ public class InterpretController {
                 }
                 Constructor<?> constructor = ObjectManager.getConstructorListModel().getElementAt(constIndex);
                 String[] argText = view.getArrConstTextField().getText().split(",[\\s]*");
+                if (argText[0].equals("")) {
+                    argText = new String[0];
+                }
                 Type[] parameters = constructor.getParameterTypes();
                 Object[] args = stringsToArgs(argText, parameters);
                 objectManager.initElement(selectedObject, selectedArrIndex, constructor, args);
                 selectedArrayElem = Array.get(selectedObject, selectedArrIndex);
                 objectManager.listFields(selectedArrayElem.getClass(), selectedArrayElem);
                 objectManager.listMethods(selectedArrayElem.getClass());
+                view.getArrElemValueField().setText(selectedArrayElem.toString());
                 InterpretView.setStatus("OK", Color.BLACK);
             }
         });

@@ -47,6 +47,7 @@ public class InterpretView extends JFrame {
     private JLabel fieldLabel;
     private JTextField valueField;
     private static JLabel statusBar;
+    private JTextField arrElemValueField;
     
     private JButton fieldSetButton;
     private JTextField methodArgsTextField;
@@ -124,6 +125,14 @@ public class InterpretView extends JFrame {
         arrInitPanel.add(arrConstTextField);
         arrInitPanel.add(arrInitButton);
         
+        //array element value
+        arrElemValueField = new JTextField(20);
+        arrElemValueField.setEditable(false);
+        JPanel arrElemValuePanel = new JPanel();
+        arrElemValuePanel.setLayout(new GridLayout(1, 1));
+        arrElemValuePanel.add(new JLabel("element value :"));
+        arrElemValuePanel.add(arrElemValueField);
+        
         JPanel creationPanel = new JPanel();
         creationPanel.setLayout(new BoxLayout(creationPanel, BoxLayout.Y_AXIS));
         creationPanel.add(cNameCombo);
@@ -138,6 +147,7 @@ public class InterpretView extends JFrame {
         creationPanel.add(objectScroll);
         creationPanel.add(arrElemScroll);
         creationPanel.add(arrInitPanel);
+        creationPanel.add(arrElemValuePanel);
         this.add(creationPanel, BorderLayout.WEST);
         
         
@@ -374,6 +384,13 @@ public class InterpretView extends JFrame {
      */
     public JLabel getStatusBar() {
         return statusBar;
+    }
+
+    /**
+     * @return the arrElemValueLabel
+     */
+    public JTextField getArrElemValueField() {
+        return arrElemValueField;
     }
     
 }
