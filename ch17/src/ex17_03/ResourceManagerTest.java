@@ -19,7 +19,11 @@ public class ResourceManagerTest {
         Object object = new Object();
         Resource res = manager.getResource(object);
         res.use(object, null);
-        res.release();
+    }
+    
+    @Test
+    public void shutdownTest() {
+        manager.shutdown();
     }
 
 }
