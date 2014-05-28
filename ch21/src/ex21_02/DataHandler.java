@@ -1,32 +1,27 @@
-package ex17_02;
+package ex21_02;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 public class DataHandler {
-
-    private WeakReference<File> lastFile;
-    private WeakReference<byte[]> lastData;
+    
+    private Map<File, byte[]> dataCache = new WeakHashMap<>();
     
     byte[] readFile(File file) {
         byte[] data;
         
-        if ((lastFile != null) && (file.equals(lastFile.get()))) {
-            data = lastData.get();
-            if (data != null) {
-                return data;
-            }
+        if (dataCache.containsKey(file)) {
+            data = dataCache.get(file);
+            return data;
+        } else {        
+            data = readBytesFromFile(file);
+            dataCache.put(file, data);
+            return data;
         }
-        
-        lastFile = new WeakReference<File>(file);
-        data = readBytesFromFile(file);
-        lastData = new WeakReference<byte[]>(data);
-        return data;
     }
     
     private byte[] readBytesFromFile(File file) {
@@ -51,5 +46,9 @@ public class DataHandler {
                 e.printStackTrace();
             }
         }
+    }
+    
+    public Map<File, byte[]> getDataCache() {
+        return dataCache;
     }
 }
