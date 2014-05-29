@@ -1,75 +1,81 @@
 package ex21_03;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 
 public class WeakValueMap<K, V> implements Map<K, V> {
 
-    private K key;
-    private WeakReference<V> value;
-    private HashMap<K, V> m = new HashMap<>();
+    /** Delegated map */
+    private HashMap<K, WeakReference<V>> map = new HashMap<>();
     
     @Override
     public void clear() {
-        // TODO Auto-generated method stub
+        map.clear();
     }
     @Override
-    public boolean containsKey(Object arg0) {
-        // TODO Auto-generated method stub
-        return false;
+    public boolean containsKey(Object key) {
+        return map.containsKey(key);
     }
     @Override
-    public boolean containsValue(Object arg0) {
-        // TODO Auto-generated method stub
-        return false;
+    public boolean containsValue(Object value) {
+        return map.containsValue(value);
     }
     @Override
-    public Set<java.util.Map.Entry<K, V>> entrySet() {
-        // TODO Auto-generated method stub
-        return null;
+    public Set<Map.Entry<K, V>> entrySet() {
+        Map<K, V> retMap = new HashMap<>();
+        map.forEach((k, v) -> {
+            retMap.put(k, v.get());
+        });
+        return retMap.entrySet();
     }
     @Override
-    public V get(Object arg0) {
-        // TODO Auto-generated method stub
-        return null;
+    public V get(Object key) {
+        return map.get(key).get();
     }
     @Override
     public boolean isEmpty() {
-        // TODO Auto-generated method stub
-        return false;
+        return map.isEmpty();
     }
     @Override
     public Set<K> keySet() {
-        // TODO Auto-generated method stub
-        return null;
+        Set<K> set = new HashSet<>();
+        map.forEach((k,v) -> {
+            set.add(k);
+        });
+        return set;
     }
     @Override
-    public V put(K arg0, V arg1) {
-        // TODO Auto-generated method stub
-        return null;
+    public V put(K key, V value) {
+       WeakReference<V> weakVal = map.put(key, new WeakReference<>(value));
+       return weakVal == null ? null : weakVal.get() ;
     }
     @Override
-    public void putAll(Map<? extends K, ? extends V> arg0) {
-        // TODO Auto-generated method stub
-        
+    public void putAll(Map<? extends K, ? extends V> otherMap) {
+        otherMap.forEach((k, v) -> {
+            map.put(k, new WeakReference<>(v));
+        });
     }
     @Override
-    public V remove(Object arg0) {
-        // TODO Auto-generated method stub
-        return null;
+    public V remove(Object key) {
+        WeakReference<V> weakVal = map.remove(key);
+        return weakVal == null ? null : weakVal.get();
     }
     @Override
     public int size() {
-        // TODO Auto-generated method stub
-        return 0;
+        return map.size();
     }
     @Override
     public Collection<V> values() {
-        // TODO Auto-generated method stub
-        return null;
+        Collection<V> collection = new ArrayList<>();
+        map.forEach((k, v) -> {
+            collection.add(v.get());
+        });
+        return collection;
     }
 }
