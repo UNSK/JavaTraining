@@ -1,9 +1,7 @@
 package ex20_11;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FilenameFilter;
-import java.nio.file.Files;
 
 public class FileNameSuffixFilter implements FilenameFilter {
 

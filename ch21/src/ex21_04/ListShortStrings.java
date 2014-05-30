@@ -1,9 +1,6 @@
 package ex21_04;
 
 
-
-import static org.hamcrest.CoreMatchers.nullValue;
-
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
