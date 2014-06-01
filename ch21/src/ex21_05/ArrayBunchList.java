@@ -70,9 +70,9 @@ public class ArrayBunchList<E> extends AbstractList<E> {
     }
     
     private class ABLIterator implements Iterator<E> {
-        private int off;    // offset from head of list
-        private int array;  // index of arrays processing currently
-        private int pos;    // position in current array
+        protected int off;    // offset from head of list
+        protected int array;  // index of arrays processing currently
+        protected int pos;    // position in current array
 
         ABLIterator() {
             off = 0;
@@ -115,14 +115,16 @@ public class ArrayBunchList<E> extends AbstractList<E> {
     }
     
     private class ABLListIterator extends ABLIterator implements ListIterator<E> {
-        private int off;    // offset from head of list
-        private int array;  // index of arrays processing currently
-        private int pos;    // position in current array
+    	
+    	private boolean calledNext;
+    	private boolean calledPrevious;
         
         public ABLListIterator() {
             off = 0;
             array = 0;
             pos = 0;
+            calledNext = false;
+            calledPrevious = false;
             // skip empty array
             for (array = 0; array < arrays.length; array++) {
                 if (arrays[array].length > 0) {
@@ -145,32 +147,59 @@ public class ArrayBunchList<E> extends AbstractList<E> {
 
         @Override
         public boolean hasPrevious() {
-            // TODO Auto-generated method stub
-            return false;
+        	return off + pos > 0;
         }
 
         @Override
         public int nextIndex() {
-            // TODO Auto-generated method stub
-            return 0;
+        	return off + pos;
         }
 
         @Override
         public E previous() {
-            // TODO Auto-generated method stub
-            return null;
+        	if (!hasPrevious()) {
+        		throw new NoSuchElementException();
+        	}
+        	E ret = arrays[array][--pos];
+        	while (pos == 0) {
+        		if (array  == 0) {
+        			break;
+        		}
+        		off -= arrays[array--].length;
+        	}
+        	calledPrevious = true;
+        	return ret;
+        }
+        
+        @Override
+        public E next() {
+        	calledNext = true;
+        	return super.next();
         }
 
         @Override
         public int previousIndex() {
-            // TODO Auto-generated method stub
-            return 0;
+        	return off + pos - 1;
         }
 
         @Override
-        public void set(E arg0) {
-            // TODO Auto-generated method stub
-
+        public void set(E value) {
+        	if (calledNext && calledPrevious) {
+        		throw new AssertionError();
+        	}
+        	
+        	int index;
+            if (calledNext) {
+            	index = previousIndex();
+            	calledNext = false;
+            } else if (calledPrevious) {
+            	index = nextIndex();
+            	calledPrevious = false;
+            } else {
+            	throw new IllegalStateException();
+            }
+            
+            ArrayBunchList.this.set(index, value);
         }
     }
 }
