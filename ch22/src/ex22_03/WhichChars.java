@@ -1,5 +1,6 @@
 package ex22_03;
 
+import java.io.UnsupportedEncodingException;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,27 +27,24 @@ public class WhichChars {
     
     @Override
     public String toString() {
-//        String desc = "[";
         StringBuilder desc = new StringBuilder();
         desc.append("[");
-//        used.forEach((k, v) -> {
-//            for (int i = v.nextSetBit(0); i >=0; v.nextSetBit(++i)) {
-//                byte[] bytes = {k, (byte) i};
-//                desc.append(bytes);
-//            }
-        // });
         for (Map.Entry<Byte, BitSet> e : used.entrySet()) {
             BitSet b = e.getValue();
             for (int i = b.nextSetBit(0); i >= 0; i = b.nextSetBit(++i)) {
                 byte[] bytes = {e.getKey(), (byte) i };
-                desc.append(new String(bytes));
+                try {
+                    desc.append(new String(bytes, "UTF-16"));
+                } catch (UnsupportedEncodingException ex) {
+                    ex.printStackTrace();
+                }
             }
         }
         return desc + "]";
     }
     
     public static void main(String[] args) {
-        String str = "はるはあけぼの　(´・ω・`)　the brown fox jumps...";
+        String str = "春はあけぼの　夏は夜 (´・ω・`)　the quick brown fox jumps over the lazy dog.";
         WhichChars whichChars = new WhichChars(str);
         System.out.println(whichChars);
     }
