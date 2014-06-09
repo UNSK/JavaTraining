@@ -44,7 +44,7 @@ public class PlayerLoader extends ClassLoader {
      */
     private FileInputStream streamFor(String string) {
         try {
-            string = "../../bin/ex16_11/" + string;
+            string = "../ch16/bin/ex16_11/players/" + string;
             FileInputStream in = new FileInputStream(string);
             return in;
         } catch (FileNotFoundException e) {

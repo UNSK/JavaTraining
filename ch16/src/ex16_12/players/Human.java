@@ -1,10 +1,14 @@
-package ex16_11;
+package ex16_12.players;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
 import org.omg.CosNaming._BindingIteratorImplBase;
+
+import ex16_12.Blackjack;
+import ex16_12.Game;
+import ex16_12.Player;
 
 /**
  *

@@ -1,4 +1,8 @@
-package ex16_12;
+package ex16_12.players;
+
+import ex16_12.Blackjack;
+import ex16_12.Game;
+import ex16_12.Player;
 
 public class TestPlayer extends Player {
 
