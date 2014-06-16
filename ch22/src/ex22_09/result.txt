@@ -1,0 +1,29 @@
+-- greedy1 --
+(.*),(.*),(.*),(.*),(.*)
+Long CSV: 118 msec
+Short CSV: 6 msec
+
+-- not greedy1 --
+(.*?),(.*?),(.*?),(.*?),(.*?)
+Long CSV: 47 msec
+Short CSV: 3 msec
+
+-- posessive1 --
+(.*+),(.*+),(.*+),(.*+),(.*+)
+Long CSV: 23345 msec
+Short CSV: 2 msec
+
+-- greedy2 --
+([^,]*),([^,]*),([^,]*),([^,]*),([^,]*)
+Long CSV: 43 msec
+Short CSV: 1 msec
+
+-- not greedy2 --
+([^,]*?),([^,]*?),([^,]*?),([^,]*?),([^,]*?)
+Long CSV: 47 msec
+Short CSV: 1 msec
+
+-- posessive2 --
+([^,]*+),([^,]*+),([^,]*+),([^,]*+),([^,]*+)
+Long CSV: 44 msec
+Short CSV: 1 msec
