@@ -1,4 +1,4 @@
-package ex22_09;
+package ex22_10;
 
 import java.io.File;
 import java.io.FileNotFoundException;
