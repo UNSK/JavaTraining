@@ -12,7 +12,14 @@ import javax.swing.table.TableModel;
  */
 public class RPNCalculatorModel {
     private Deque<Double> stack = new LinkedList<>();
-    private static DefaultTableModel tableModel = new DefaultTableModel();
+    private static DefaultTableModel tableModel = new DefaultTableModel(4, 1);
+    
+   
+    public RPNCalculatorModel() {
+        stack.push(123.4);
+        stack.push(533.11);
+        tableModel.addColumn(stack.toArray(new Double[3]));
+    }
     
     /**
      * @return the operand stack

@@ -7,5 +7,6 @@ public class RPNCalculatorController {
 
     public RPNCalculatorController() {
         RPNCalculatorView view = new RPNCalculatorView();
+        RPNCalculatorModel model = new RPNCalculatorModel();
     }
 }

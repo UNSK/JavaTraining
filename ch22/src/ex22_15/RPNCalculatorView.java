@@ -21,16 +21,17 @@ public class RPNCalculatorView extends JFrame {
         getContentPane().setLayout(new BorderLayout());
         
         JTable stackTable = new JTable(RPNCalculatorModel.getTableModel());
+        stackTable.setTableHeader(null);
         
         JScrollPane stackScroll = new JScrollPane(stackTable);
-        stackScroll.setPreferredSize(new Dimension(200, 50));
+        stackScroll.setPreferredSize(new Dimension(200, 100));
         JPanel stackPanel = new JPanel();
         stackPanel.add(stackScroll);
         
-        add(stackPanel);
+        getContentPane().add(stackPanel, BorderLayout.NORTH);
         
         JPanel buttonPanel = initButtonsPanel();
-        add(buttonPanel);
+        getContentPane().add(buttonPanel, BorderLayout.CENTER);
         
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Calculator");
@@ -139,6 +140,7 @@ public class RPNCalculatorView extends JFrame {
         p.add(seven);
         p.add(eight);
         p.add(nine);
+        p.add(dot);
         p.add(plus);
         p.add(minus);
         p.add(mul);
@@ -146,6 +148,7 @@ public class RPNCalculatorView extends JFrame {
         p.add(mod);
         p.add(clear);
         p.add(enter);
+        pack();
         return p;
     }
 }
