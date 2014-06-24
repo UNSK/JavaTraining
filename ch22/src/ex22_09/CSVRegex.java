@@ -27,49 +27,49 @@ public class CSVRegex {
         System.out.println("-- greedy1 --");
         System.out.println(greedy1);
         source = new FileReader(testLong);
-        System.out.println("Long CSV: " + read(greedy1, source) + " msec");
+        System.out.println("Long CSV: " + read(greedy1, source) + " nano sec");
         source = new FileReader(testShort);
-        System.out.println("Short CSV: " + read(greedy1, source) + " msec");
+        System.out.println("Short CSV: " + read(greedy1, source) + " nano sec");
         System.out.println();
         
         System.out.println("-- not greedy1 --");
         System.out.println(notGreedy1);
         source = new FileReader(testLong);
-        System.out.println("Long CSV: " + read(notGreedy1, source) + " msec");
+        System.out.println("Long CSV: " + read(notGreedy1, source) + " nano sec");
         source = new FileReader(testShort);
-        System.out.println("Short CSV: " + read(notGreedy1, source) + " msec");
+        System.out.println("Short CSV: " + read(notGreedy1, source) + " nano sec");
         System.out.println();
         
         System.out.println("-- posessive1 --");
         System.out.println(posessive1);
         source = new FileReader(testLong);
-        System.out.println("Long CSV: " + read(posessive1, source) + " msec");
+        System.out.println("Long CSV: " + read(posessive1, source) + " nano sec");
         source = new FileReader(testShort);
-        System.out.println("Short CSV: " + read(posessive1, source) + " msec");
+        System.out.println("Short CSV: " + read(posessive1, source) + " nano sec");
         System.out.println();
         
         System.out.println("-- greedy2 --");
         System.out.println(greedy2);
         source = new FileReader(testLong);
-        System.out.println("Long CSV: " + read(greedy2, source) + " msec");
+        System.out.println("Long CSV: " + read(greedy2, source) + " nano sec");
         source = new FileReader(testShort);
-        System.out.println("Short CSV: " + read(greedy2, source) + " msec");
+        System.out.println("Short CSV: " + read(greedy2, source) + " nano sec");
         System.out.println();
         
         System.out.println("-- not greedy2 --");
         System.out.println(notGreedy2);
         source = new FileReader(testLong);
-        System.out.println("Long CSV: " + read(notGreedy2, source) + " msec");
+        System.out.println("Long CSV: " + read(notGreedy2, source) + " nano sec");
         source = new FileReader(testShort);
-        System.out.println("Short CSV: " + read(notGreedy2, source) + " msec");
+        System.out.println("Short CSV: " + read(notGreedy2, source) + " nano sec");
         System.out.println();
         
         System.out.println("-- posessive2 --");
         System.out.println(posessive2);
         source = new FileReader(testLong);
-        System.out.println("Long CSV: " + read(posessive2, source) + " msec");
+        System.out.println("Long CSV: " + read(posessive2, source) + " nano sec");
         source = new FileReader(testShort);
-        System.out.println("Short CSV: " + read(posessive2, source) + " msec");
+        System.out.println("Short CSV: " + read(posessive2, source) + " nano sec");
         
         source.close();
     }
@@ -78,18 +78,18 @@ public class CSVRegex {
      * 
      * @param regex
      * @param source
-     * @return elapsed time in msec
+     * @return elapsed time in nano sec
      */
     public static long read(String regex, Readable source) {
         @SuppressWarnings("resource")
         Scanner in = new Scanner(source);
         Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
-        long start = System.currentTimeMillis();
+        long start = System.nanoTime();
         while (in.hasNextLine()) {
             in.findInLine(pattern);
             in.nextLine();
         }
-        return System.currentTimeMillis() - start;
+        return System.nanoTime() - start;
     }
 
 }
