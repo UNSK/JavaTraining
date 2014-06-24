@@ -16,6 +16,11 @@ public class Main {
             @Override
             public void run() {
                 RPNCalculatorController controller = new RPNCalculatorController();
+                controller.bindNumberButtonListener();
+                controller.bindEnterButtonListener();
+                controller.bindDotButtonListener();
+                controller.bindClearButtonListener();
+                controller.bindOperators();
             }
         });
     }
