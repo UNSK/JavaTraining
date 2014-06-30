@@ -3,7 +3,6 @@ package ex22_04;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.security.auth.login.FailedLoginException;
 
 public class AttributedObserver implements Observer {
 
