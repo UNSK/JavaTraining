@@ -1,4 +1,4 @@
-package ex17_04;
+package ex17_05;
 
 import static org.junit.Assert.*;
 
@@ -26,7 +26,7 @@ public class ResourceManagerTest {
         object = null; 
         System.gc();
         manager.shutdown();
-        manager.getReaper().join();
+        
         assertTrue(manager.getRefs().isEmpty());
       }
 

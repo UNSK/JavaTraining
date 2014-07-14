@@ -1,4 +1,4 @@
-package ex17_04;
+package ex17_05;
 
 import java.lang.ref.PhantomReference;
 import java.lang.ref.Reference;
@@ -9,22 +9,30 @@ import java.util.Map;
 public final class ResourceManager {
     private final ReferenceQueue<Object> queue;
     private final Map<Reference<?>, Resource> refs;
-    private final Thread reaper;
     private boolean shutdown = false;
     
     public ResourceManager() {
         queue = new ReferenceQueue<>();
         refs = new HashMap<>();
-        reaper = new ReaperThread();
-        reaper.start();
         
         // initialize a resource...
     }
     
     public synchronized void shutdown() {
-        if (!shutdown) {
-            shutdown = true;
-            reaper.interrupt();
+        if (shutdown) {
+            throw new IllegalStateException();
+        }
+        shutdown = true;
+        while (!refs.isEmpty()) {
+            Reference<?> ref = null;
+            while ((ref = queue.poll()) == null); //block until reference enqueued
+            Resource res = null;
+            synchronized (this) {
+                res = refs.get(ref);
+                refs.remove(ref);
+            }
+            res.release();
+            ref.clear();
         }
     }
     
@@ -52,34 +60,4 @@ public final class ResourceManager {
         return refs;
     }
 
-    /**
-     * @return the reaper
-     */
-    public Thread getReaper() {
-        return reaper;
-    }
-
-    class ReaperThread extends Thread {
-        boolean isInterrupted = false;
-        @Override
-        public void run() {
-            while (true) {
-                try {
-                    Reference<?> ref = queue.remove();
-                    Resource res = null;
-                    synchronized (ResourceManager.this) {
-                        res = refs.get(ref);
-                        refs.remove(ref);
-                    }
-                    res.release();
-                    ref.clear();
-                    if (isInterrupted && refs.isEmpty()) {
-                        break;
-                    }
-                } catch (InterruptedException ex) {
-                    isInterrupted = true;
-                }
-            }
-        }
-    }
 }
