@@ -1,10 +1,10 @@
 package ex2_2;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.Map;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -20,20 +20,21 @@ public class PropertiesPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
     /** minimal font size */
-    private static final int MIN_SIZE = 20;
+    private static final int MIN_SIZE = 10;
     /** max font size */
-    private static final int MAX_SIZE = 80;
-    /** color choices */
-    private static final Color[] COLORS = {
-        Color.BLACK, Color.BLUE, Color.CYAN, Color.DARK_GRAY, Color.GRAY,
-        Color.GREEN, Color.LIGHT_GRAY, Color.MAGENTA, Color.ORANGE, 
-        Color.PINK, Color.RED, Color.WHITE, Color.YELLOW
-        };
+    private static final int MAX_SIZE = 70;
+   
     
     /** layout */
     private GridBagLayout gbl = new GridBagLayout(); 
     
+    private JComboBox<String> fontNameBox;
+    private JComboBox<Integer> fontSizeBox;
+    private JComboBox<Map<String, Object>> fontColorBox;
+    private JComboBox<Map<String, Object>> bgColorBox;
+    
     public PropertiesPanel() {
+        ClockDataModel model = DigitalClock.getModel();
         
         // font name
         JLabel fontNameLabel = new JLabel("Font name: ");
@@ -43,7 +44,8 @@ public class PropertiesPanel extends JPanel {
         GraphicsEnvironment ge = 
                 GraphicsEnvironment.getLocalGraphicsEnvironment();
         String[] fonts = ge.getAvailableFontFamilyNames();
-        JComboBox<String> fontNameBox = new JComboBox<>(fonts);
+        fontNameBox = new JComboBox<>(fonts);
+        fontNameBox.setSelectedItem(model.getFontName());
         addContent(fontNameBox, 1, 0, 1);
         
         // font size
@@ -51,70 +53,39 @@ public class PropertiesPanel extends JPanel {
         fontSizeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         addContent(fontSizeLabel, 0, 1, 1);
         
-        JComboBox<Integer> fontSizeBox = new JComboBox<>();
+        fontSizeBox = new JComboBox<>();
         for (int i = MIN_SIZE; i < MAX_SIZE; i += 2) {
             fontSizeBox.addItem(i);
         }
+        fontSizeBox.setSelectedItem(model.getFontSize());
         addContent(fontSizeBox, 1, 1, 1);
         
-        // color
+        // color  
+        ColorListRenderer renderer = new ColorListRenderer();
+        
+        // clock color
         JLabel fontColorLabel = new JLabel("Font Color: ");
         fontColorLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         addContent(fontColorLabel, 0, 2, 1);
         
-        //TODO color chips
-        JComboBox<?> fontColorBox = new JComboBox<>();
+        ColorListModel fontColorModel = new ColorListModel();
+        fontColorBox = new JComboBox<>(fontColorModel);
+        fontColorBox.setSelectedIndex(fontColorModel.getColorIndex(model.getFontColor()));
+        fontColorBox.setRenderer(renderer);
         addContent(fontColorBox, 1, 2, 1);
         
+        // back ground color
         JLabel bgColorLabel = new JLabel("Background Color: ");
         bgColorLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         addContent(bgColorLabel, 0, 3, 1);
         
-        //TODO color chips
-        JComboBox<?> bgColorBox = new JComboBox<>();
+        ColorListModel bgColorModel = new ColorListModel();
+        bgColorBox = new JComboBox<>(bgColorModel);
+        bgColorBox.setSelectedIndex(bgColorModel.getColorIndex(model.getBgColor()));
+        bgColorBox.setRenderer(renderer);
         addContent(bgColorBox, 1, 3, 1);
         
-        
-        
         setLayout(gbl);
-    }
-    
-    
-    /**
-     * get color name from java.awt.Color
-     * @param color java.awt.Color
-     * @return color name string
-     */
-    private String getColorName(Color color) {
-        if (color == Color.BLACK) {
-            return "Black";
-        } else if (color == Color.BLUE) {
-            return "Blue";
-        } else if (color == Color.CYAN) {
-            return "Cyan";
-        } else if (color == Color.DARK_GRAY) {
-            return "Dark Gray";
-        } else if (color == Color.GRAY) {
-            return "Gray";
-        } else if (color == Color.GREEN) {
-            return "Green";
-        } else if (color == Color.LIGHT_GRAY) {
-            return "Light Gray";
-        } else if (color == Color.MAGENTA) {
-            return "Magenta";
-        } else if (color == Color.ORANGE) {
-            return "Orange";
-        } else if (color == Color.PINK) {
-            return "Pink";
-        } else if (color == Color.RED) {
-            return "Red";
-        } else if (color == Color.WHITE) {
-            return "White";
-        } else if (color == Color.YELLOW) {
-            return "Yellow";
-        } else {
-            return color.toString();
-        }
     }
     
     /**
@@ -134,20 +105,30 @@ public class PropertiesPanel extends JPanel {
     }
     
     /**
-     * add a content to GridBagLayout
-     * @param c component
-     * @param x grid x
-     * @param y grid y
-     * @param w grid width
-     * @param ipadx padding
+     * @return the fontNameBox
      */
-    private void addContent(Component c, int x, int y, int w, int ipadx) {
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.gridy = y;
-        gbc.gridwidth = w;
-        gbc.ipadx = ipadx;
-        gbl.setConstraints(c, gbc);
-        add(c);
+    public JComboBox<String> getFontNameBox() {
+        return fontNameBox;
+    }
+    
+    /**
+     * @return the fontSizeBox
+     */
+    public JComboBox<Integer> getFontSizeBox() {
+        return fontSizeBox;
+    }
+
+    /**
+     * @return the fontColorBox
+     */
+    public JComboBox<Map<String, Object>> getFontColorBox() {
+        return fontColorBox;
+    }
+
+    /**
+     * @return the bgColorBox
+     */
+    public JComboBox<Map<String, Object>> getBgColorBox() {
+        return bgColorBox;
     }
 }

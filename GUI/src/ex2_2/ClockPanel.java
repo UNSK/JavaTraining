@@ -2,7 +2,9 @@ package ex2_2;
 
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DateFormat;
@@ -18,11 +20,20 @@ public class ClockPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 	/** clock displaying format*/
 	private static final String CLOCK_PATTERN = "yyyy-MM-dd E HH:mm ss";
+	/** clock data */
+	private ClockDataModel model;
+	
+	/** panel width */
+	private int width = 500;
+	/** panel height */
+	private int height = 120;
+	
 
     /**
      * construct ClockPanel and start Timer
      */
     public ClockPanel() {
+        model = DigitalClock.getModel();
         Timer t1 = new Timer(1000, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 repaint();
@@ -34,8 +45,18 @@ public class ClockPanel extends JPanel {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 20));
-        g.drawString(fetchCurrentTime(), 120, 65);
+        g.setFont(model.getClockFont());
+        g.setColor(model.getFontColor());
+        setBackground(model.getBgColor());
+        
+        FontMetrics fm = g.getFontMetrics();
+        Rectangle textRec = fm.getStringBounds(
+                fetchCurrentTime(), g).getBounds();
+        width  = 200 + textRec.width;
+        height = 120 + textRec.height;
+        setSize(width, height);
+        g.drawString(fetchCurrentTime(), 100,
+                textRec.height / 2 + fm.getMaxAscent());
     }
     
     /**
@@ -50,6 +71,6 @@ public class ClockPanel extends JPanel {
     
     @Override
     public Dimension getPreferredSize() {
-        return new Dimension(500, 120);
+        return new Dimension(width, height);
     }
 }
