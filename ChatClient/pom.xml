@@ -2,7 +2,7 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>DigitalClock</groupId>
-    <artifactId>ChatServer</artifactId>
+    <artifactId>ChatClient</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
 
@@ -25,44 +25,30 @@
             <artifactId>javax.websocket-api</artifactId>
             <version>1.1</version>
         </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
-        </dependency>
-        <!--
-        <dependency>
-            <groupId>org.eclipse.jetty.websocket</groupId>
-            <artifactId>websocket-server</artifactId>
-            <version>9.2.6.v20141205</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty.websocket</groupId>
-            <artifactId>websocket-servlet</artifactId>
-            <version>9.2.6.v20141205</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty.websocket</groupId>
-            <artifactId>websocket-common</artifactId>
-            <version>9.2.6.v20141205</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty.websocket</groupId>
-            <artifactId>websocket-api</artifactId>
-            <version>9.2.6.v20141205</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty.websocket</groupId>
-            <artifactId>websocket-client</artifactId>
-            <version>9.2.6.v20141205</version>
-        </dependency>
-        -->
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-webapp</artifactId>
-            <version>9.2.6.v20141205</version>
-        </dependency>
 
+        <dependency>
+            <groupId>org.glassfish.tyrus</groupId>
+            <artifactId>tyrus-client</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.tyrus</groupId>
+            <artifactId>tyrus-container-grizzly</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <!-- <dependency> <groupId>javax.servlet</groupId> <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version> </dependency> <dependency> <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-server</artifactId> <version>9.2.6.v20141205</version>
+            </dependency> <dependency> <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-servlet</artifactId> <version>9.2.6.v20141205</version>
+            </dependency> <dependency> <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-common</artifactId> <version>9.2.6.v20141205</version>
+            </dependency> <dependency> <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-api</artifactId> <version>9.2.6.v20141205</version>
+            </dependency> <dependency> <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-client</artifactId> <version>9.2.6.v20141205</version>
+            </dependency> <dependency> <groupId>org.eclipse.jetty</groupId> <artifactId>jetty-webapp</artifactId>
+            <version>9.2.6.v20141205</version> </dependency> -->
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
@@ -89,21 +75,6 @@
                 </configuration>
             </plugin>
 
-            <plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.2.6.v20141205</version>
-                <configuration>
-                    <contextPath>/</contextPath>
-                    <!-- jetty auto rebuild -->
-                    <scanIntervalSeconds>10</scanIntervalSeconds>
-                    <connectors>
-                    </connectors>
-                </configuration>
-                <executions>
-                </executions>
-            </plugin>
         </plugins>
-        <finalName>LibraServer</finalName>
     </build>
 </project>
