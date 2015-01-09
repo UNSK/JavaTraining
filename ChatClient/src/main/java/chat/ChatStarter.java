@@ -1,6 +1,3 @@
-/**
- * Copyright (c) 2015 Ricoh Company, ltd.
- */
 package chat;
 
 import java.io.IOException;
