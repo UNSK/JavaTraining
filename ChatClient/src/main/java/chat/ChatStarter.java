@@ -8,6 +8,8 @@ import javax.websocket.DeploymentException;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
+import view.ChatClientView;
+
 /**
  *
  */
@@ -22,6 +24,8 @@ public class ChatStarter {
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         URI uri = URI.create("ws://localhost:8080/chat");
         Session session = container.connectToServer(new ChatClient(), uri);
+        
+        new ChatClientView();
     }
 
 }
