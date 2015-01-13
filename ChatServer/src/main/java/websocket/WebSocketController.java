@@ -52,12 +52,29 @@ public class WebSocketController {
      * JSONを解析して、Facadeの各メソッドに渡す。
      * @param reqJson
      *            JSONオブジェクト
-     * @param uuid
-     *            デバイス固有値
+     * @param name
+     *            クライアントの名前
      * @return レスポンス（JSON形式)
      */
-    public JSONObject parseJSON(JSONObject reqJson, String uuid) {
-        return reqJson;
+    public JSONObject parseJSON(JSONObject reqJson, String name) {
+        JSONObject resJson = new JSONObject();
+        switch (reqJson.getString("tag")) {
+        case "message":
+            resJson.put("tag", "message");
+            resJson.put("sendFrom", name);
+            resJson.put("sendTo", reqJson.getString("sendTo"));
+            resJson.put("entity", reqJson.getString("entity"));
+            break;
+        case "sendName":
+            resJson.put("tag", "message");
+            resJson.put("sendFrom", "SV");
+            resJson.put("sendTo", "all");
+            resJson.put("entity", "Hello, " + reqJson.getString("name"));
+            break;
+        default:
+            new AssertionError("undefined api tag");
+        }
+        return resJson;
     }
 
     /**
