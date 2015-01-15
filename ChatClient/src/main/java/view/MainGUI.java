@@ -1,7 +1,6 @@
 package view;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -101,7 +100,7 @@ public class MainGUI {
         mainPanel.setLayout(new BorderLayout());
 
         JPanel southPanel = new JPanel();
-        southPanel.setBackground(Color.BLUE);
+        //southPanel.setBackground(Color.BLUE);
         southPanel.setLayout(new GridBagLayout());
 
         messageBox = new JTextField(30);
@@ -110,7 +109,13 @@ public class MainGUI {
         sendButton = new JButton("Send Message");
 //        sendButton.addActionListener(new sendMessageButtonListener());
 
-        chatBox = new JTextArea();
+        chatBox = new JTextArea() {
+            @Override
+            public void append(String s) {
+                super.append(s);
+                setCaretPosition(getDocument().getLength());
+            }
+        };
         chatBox.setEditable(false);
         chatBox.setFont(new Font("Monospaced", Font.PLAIN, 15));
         chatBox.setLineWrap(true);
