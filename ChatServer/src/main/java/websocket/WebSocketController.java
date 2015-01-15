@@ -2,6 +2,7 @@ package websocket;
 
 
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -60,6 +61,19 @@ public class WebSocketController {
         JSONObject resJson = new JSONObject();
         switch (reqJson.getString("tag")) {
         case "message":
+            if (reqJson.getString("entity").startsWith("@bot")) {
+                String msgToBot = "hubot " + reqJson.getString("entity").split("[\\s　]", 2)[1];
+                for (WebSocketChat c : clients) {
+                    if (c.getName().equals("BOT")) {
+                        try {
+                            c.getSession().getBasicRemote().sendText(msgToBot);
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
             resJson.put("tag", "message");
             resJson.put("sendFrom", name);
             resJson.put("sendTo", reqJson.getString("sendTo"));
@@ -71,6 +85,15 @@ public class WebSocketController {
             resJson.put("sendTo", "all");
             resJson.put("entity", "Hello, " + reqJson.getString("name"));
             break;
+        case "list":
+            resJson.put("tag", "message");
+            resJson.put("sendFrom", "SV");
+            resJson.put("sendTo", name);
+            String clientNames = "";
+            for (WebSocketChat c : clients) {
+                clientNames += "\n" + c.getName();
+            }
+            resJson.put("entity", clientNames);
         default:
             new AssertionError("undefined api tag");
         }

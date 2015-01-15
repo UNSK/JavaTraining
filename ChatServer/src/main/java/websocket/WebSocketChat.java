@@ -68,9 +68,10 @@ public class WebSocketChat {
     @OnMessage
     public void onMessage(String message) throws IOException {
         //test broadcast
-        for(WebSocketChat clients : WebSocketController.getInstance().getClients()) {
-            clients.getSession().getBasicRemote().sendText(message);
-        }
+//        for(WebSocketChat clients : WebSocketController.getInstance().getClients()) {
+//            clients.getSession().getBasicRemote().sendText(message);
+//        }
+
 
         //性能テスト用に時間計測
         long begin, end;
@@ -91,6 +92,10 @@ public class WebSocketChat {
             sendMessage(resJson);
             System.out.println("RES: " + resJson.toString());
         } catch (JSONException e) {
+            if (this.name.equals("BOT")) {
+                replyFromBot(message);
+                return;
+            }
             session.getBasicRemote().sendText(e.toString());
 //            session.getRemote().sendStringByFuture(e.toString());
         } finally {
@@ -99,6 +104,23 @@ public class WebSocketChat {
             System.out.println();
         }
 
+    }
+
+    /**
+     * @param message
+     */
+    private void replyFromBot(String message) {
+        JSONObject json = new JSONObject();
+        json.put("tag", "message");
+        json.put("sendFrom", name);
+        json.put("sendTo", "all");
+        json.put("entity", message);
+        try {
+            sendMessage(json);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -113,10 +135,16 @@ public class WebSocketChat {
                 clients.getSession().getBasicRemote().sendText(json.toString());
             }
         } else {
+            String sendFrom = json.getString("sendFrom");
+            json.put("sendFrom", sendFrom + "> to <" + sendTo); //FIXME むりやり
             for(WebSocketChat clients : WebSocketController.getInstance().getClients()) {
                 if (sendTo.equals(clients.getName())) {
                     clients.getSession().getBasicRemote().sendText(json.toString());
                 }
+            }
+            //send to myself
+            if (!sendTo.equals(this.getName())) {
+                this.session.getBasicRemote().sendText(json.toString());
             }
         }
     }

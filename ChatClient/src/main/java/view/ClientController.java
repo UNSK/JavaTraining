@@ -62,12 +62,29 @@ public class ClientController {
                 String message = view.getSendMessage();
                 if (message.isEmpty()) {
                     //nop
+                } else if (message.startsWith("\\")) {
+                    parseCommand(message);
                 } else {
                     endpoint.send(message);
                 }
                 view.clearMessageBox();
             }
         });
+    }
 
+    private void parseCommand(String s) {
+        if (s.startsWith("\\whisper")) {
+            // \whisper <name> <message>
+            String str[] = s.split("[\\s　]", 3);
+            String name = str[1];
+            String message = str[2];
+            endpoint.sendTo(message, name);
+        } else if (s.startsWith("\\clock")) {
+            view.showClock();
+        } else if (s.startsWith("\\list")) {
+            endpoint.getClientList();
+        } else {
+            view.printInfo("invalid command");
+        }
     }
 }

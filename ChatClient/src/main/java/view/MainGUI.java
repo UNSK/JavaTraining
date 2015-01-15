@@ -16,19 +16,24 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import view.digitalclock.ClockPanel;
+
 
 public class MainGUI {
 
-    String      appName     = "chat";
-    MainGUI     mainGUI;
-    JFrame      newFrame    = new JFrame(appName);
-    JButton     sendButton;
-    JButton     connectButton;
-    JTextField  messageBox;
-    JTextArea   chatBox;
-    JTextField  usernameChooser;
-    JTextField  serverAddress;
-    JFrame      preFrame;
+    private String      appName     = "chat";
+    private MainGUI     mainGUI;
+    private JFrame      newFrame    = new JFrame(appName);
+    private JButton     sendButton;
+    private JButton     connectButton;
+    private JTextField  messageBox;
+    private JTextArea   chatBox;
+    private JTextField  usernameChooser;
+    private JTextField  serverAddress;
+    private JFrame      preFrame;
+
+    private ClockPanel clockPanel;
+    private boolean clockFlag = false;
 
 //    public static void main(String[] args) {
 //        SwingUtilities.invokeLater(new Runnable() {
@@ -81,6 +86,8 @@ public class MainGUI {
         preFrame.add(BorderLayout.CENTER, prePanel);
         preFrame.add(BorderLayout.SOUTH, connectButton);
 
+        preFrame.getRootPane().setDefaultButton(connectButton);
+
         usernameChooser.requestFocusInWindow();
 
         preFrame.setSize(300, 100);
@@ -128,9 +135,15 @@ public class MainGUI {
 
         mainPanel.add(BorderLayout.SOUTH, southPanel);
 
+        newFrame.getRootPane().setDefaultButton(sendButton);
+
+        clockPanel = new ClockPanel();
+        mainPanel.add(BorderLayout.NORTH, clockPanel);
+        clockPanel.setVisible(clockFlag); //default: false
+
         newFrame.add(mainPanel);
         newFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        newFrame.setSize(670, 500);
+        newFrame.setSize(270, 200);
     }
 
     public void display() {
@@ -203,8 +216,17 @@ public class MainGUI {
         chatBox.append(s + "\n");
     }
 
+    public void printInfo(String s) {
+        chatBox.append(s + "\n");
+    }
+
     public void printMessage(String s) {
         chatBox.setText(s);
+    }
+
+    public void showClock() {
+        clockFlag = !clockFlag;
+        clockPanel.setVisible(clockFlag);
     }
 
     /**

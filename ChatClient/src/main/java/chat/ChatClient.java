@@ -61,6 +61,21 @@ public class ChatClient {
         sendServer(json);
     }
 
+    public void sendTo(String msg, String name) {
+        JSONObject json = new JSONObject();
+        json.put("tag", "message");
+        json.put("type", "plainText");
+        json.put("sendTo", name);
+        json.put("entity", msg);
+        sendServer(json);
+    }
+
+    public void getClientList() {
+        JSONObject json = new JSONObject();
+        json.put("tag", "list");
+        sendServer(json);
+    }
+
     private void sendServer(JSONObject json) {
         try {
             session.getBasicRemote().sendText(json.toString());
@@ -75,4 +90,6 @@ public class ChatClient {
             this.name = name;
         }
     }
+
+
 }
